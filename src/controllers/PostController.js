@@ -371,82 +371,69 @@ class PostController {
     }
   }
 
-  async getCommentsByPostId(postId, sortField, sortType) {
-    const nestComments = (comments) => {
-      const commentMap = {};
-      const nestedComments = [];
-
-      comments.forEach((comment) => {
-        comment.children = [];
-        commentMap[comment.id] = comment;
-      });
-
-      comments.forEach((comment) => {
-        if (comment.parentCommentId) {
-          const id = comment.parentCommentId;
-          delete comment.parentCommentId;
-          commentMap[id].children.push(comment);
-        } else {
-          delete comment.parentCommentId;
-          nestedComments.push(comment);
-        }
-      });
-
-      return nestedComments;
-    };
-
-    const comments = await commentRepository.find({
-      where: {
-        postId,
-      },
-      relations: ['commentatorInfo'],
-      select: {
-        id: true,
-        parentCommentId: true,
-        content: true,
-        createdAt: true,
-        commentatorInfo: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          avatar: true,
-        },
-      },
-      order: {
-        [sortField]: sortType,
-      },
-    });
-
-    const numberOfComments = comments.length;
-
-    const result = nestComments(comments);
-
-    return {
-      comments: result,
-      numberOfComments,
-    };
-  }
-
   // [GET] /posts/comments/:postId
-  getComments = async (req, res, next) => {
+  async getComments(req, res, next) {
     try {
       const { postId } = req.params;
       const { sortField, sortType } = req.query;
 
-      const { comments, numberOfComments } = await this.getCommentsByPostId(
-        postId,
-        sortField,
-        sortType
-      );
+      const nestComments = (comments) => {
+        const commentMap = {};
+        const nestedComments = [];
 
-      return res.status(200).json({ comments, numberOfComments });
+        comments.forEach((comment) => {
+          comment.children = [];
+          commentMap[comment.id] = comment;
+        });
+
+        comments.forEach((comment) => {
+          if (comment.parentCommentId) {
+            const id = comment.parentCommentId;
+            delete comment.parentCommentId;
+            commentMap[id].children.push(comment);
+          } else {
+            delete comment.parentCommentId;
+            nestedComments.push(comment);
+          }
+        });
+
+        return nestedComments;
+      };
+
+      const comments = await commentRepository.find({
+        where: {
+          postId,
+        },
+        relations: ['commentatorInfo'],
+        select: {
+          id: true,
+          parentCommentId: true,
+          content: true,
+          createdAt: true,
+          commentatorInfo: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        order: {
+          [sortField]: sortType,
+        },
+      });
+
+      const numberOfComments = comments.length;
+
+      const result = nestComments(comments);
+
+      return res.status(200).json({ comments: result, numberOfComments });
     } catch (error) {
       next(error);
     }
-  };
+  }
 
   // [POST] /posts/comment
-  comment = async (req, res, next, io) => {
+  async comment(req, res, next, io) {
     try {
       const { id } = req.userToken;
       const { postId, parentCommentId, content } = req.body;
@@ -489,7 +476,7 @@ class PostController {
     } catch (error) {
       next(error);
     }
-  };
+  }
 }
 
 module.exports = new PostController();
