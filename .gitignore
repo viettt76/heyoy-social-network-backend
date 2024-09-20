@@ -6,3 +6,4 @@ tmp/
 temp/
 .env
 migration/
+dump.rdb

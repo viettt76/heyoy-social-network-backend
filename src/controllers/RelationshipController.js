@@ -33,11 +33,11 @@ class RelationshipController {
           OR (r2.user2 = :userId2 AND r2.user1 = user.id)`
       )
       .setParameters({ userId1, userId2 })
-      .getMany();
+      .getRawMany();
   }
 
   // [GET] /relationships/friends
-  async friends(req, res, next) {
+  friends = async (req, res, next) => {
     try {
       const { id } = req.userToken;
       const friends = await userRepository
@@ -58,11 +58,22 @@ class RelationshipController {
         )
         .getRawMany();
 
-      return res.status(200).json(friends);
+      const result = await Promise.all(
+        friends.map(async (user) => {
+          const commonFriends = await this.commonFriends(id, user.id);
+          return {
+            ...user,
+            commonFriends,
+            numberOfCommonFriends: commonFriends.length,
+          };
+        })
+      );
+
+      return res.status(200).json(result);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   // [GET] /relationships/suggestion
   async suggestion(req, res, next) {
@@ -232,7 +243,7 @@ class RelationshipController {
   }
 
   // [POST] /relationships/request
-  async request(req, res, next) {
+  request = async (req, res, next, io) => {
     try {
       const { relationship, receiverId } = req.body;
       const { id } = req.userToken;
@@ -241,6 +252,27 @@ class RelationshipController {
         await friendRequestRepository.save({
           senderId: id,
           receiverId: receiverId,
+        });
+
+        const userInfo = await userRepository.findOne({
+          where: { id: id },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+            homeTown: true,
+            school: true,
+            workplace: true,
+          },
+        });
+
+        const commonFriends = this.commonFriends(id, receiverId);
+
+        io.to(`user-${receiverId}`).emit('newFriendRequest', {
+          ...userInfo,
+          commonFriends,
+          numberOfCommonFriends: commonFriends?.length,
         });
       } else {
         await relationshipRepository.save({
@@ -254,10 +286,10 @@ class RelationshipController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   // [GET] /relationships/request
-  async friendRequests(req, res, next) {
+  friendRequests = async (req, res, next) => {
     try {
       const { id } = req.userToken;
 
@@ -281,30 +313,129 @@ class RelationshipController {
         )
         .getRawMany();
 
-      return res.status(200).json(all);
+      const result = await Promise.all(
+        all.map(async (user) => {
+          const commonFriends = await this.commonFriends(id, user.id);
+          return {
+            ...user,
+            commonFriends,
+            numberOfCommonFriends: commonFriends.length,
+          };
+        })
+      );
+
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // [DELETE] /relationships/request/:senderId
+  async refuseFriendRequest(req, res, next) {
+    try {
+      const { id } = req.userToken;
+      const { senderId } = req.params;
+
+      const friendRequest = await friendRequestRepository.findOne({
+        where: {
+          senderId: senderId,
+          receiverId: id,
+        },
+      });
+
+      if (friendRequest) {
+        await friendRequestRepository.delete(friendRequest);
+
+        return res.status(204).json();
+      }
+
+      const error = new Error('Not found this friend request');
+      error.status = 404;
+      throw error;
     } catch (error) {
       next(error);
     }
   }
 
   // [POST] /relationships/accept
-  async accept(req, res, next) {
+  async accept(req, res, next, io) {
     try {
       const { id } = req.userToken;
       const { friendId } = req.body;
 
-      await relationshipRepository.save({
-        user1: id,
-        user2: friendId,
-        relationshipTypeId: 1,
+      const existedRelationship = await relationshipRepository.findOne({
+        where: [
+          { user1: id, user2: friendId },
+          { user1: friendId, user2: id },
+        ],
       });
 
-      await friendRequestRepository.delete({
-        senderId: friendId,
-        receiverId: id,
+      const existedFriendRequest = await friendRequestRepository.findOne({
+        where: {
+          senderId: friendId,
+          receiverId: id,
+        },
       });
 
-      return res.status(200).json();
+      if (!existedRelationship && existedFriendRequest) {
+        await relationshipRepository.save({
+          user1: id,
+          user2: friendId,
+          relationshipTypeId: 1,
+        });
+
+        await friendRequestRepository.delete(existedFriendRequest);
+
+        const currentUserInfo = await userRepository.findOne({
+          where: { id: id },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+            homeTown: true,
+            school: true,
+            workplace: true,
+          },
+        });
+
+        io.to(`user-${friendId}`).emit('acceptFriendRequest', currentUserInfo);
+
+        return res.status(200).json();
+      }
+
+      const error = new Error('Not found this friend request');
+      error.status = 404;
+      throw error;
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // [DELETE] /relationships/:friendId
+  async delete(req, res, next, io) {
+    try {
+      const { id } = req.userToken;
+      const { friendId } = req.params;
+
+      const existedRelationship = await relationshipRepository.findOne({
+        where: [
+          { user1: id, user2: friendId },
+          { user1: friendId, user2: id },
+        ],
+      });
+
+      if (existedRelationship) {
+        await relationshipRepository.delete(existedRelationship);
+
+        io.to(`user-${friendId}`).emit('unfriend', id);
+
+        return res.status(204).json();
+      }
+
+      const error = new Error('Not found this friend');
+      error.status = 404;
+      throw error;
     } catch (error) {
       next(error);
     }

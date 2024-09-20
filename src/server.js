@@ -10,6 +10,7 @@ const { errorHandler } = require('./utils/errorHandler');
 const authMiddleware = require('./middlewares/authMiddleware');
 const events = require('./events');
 require('events').EventEmitter.prototype._maxListeners = 100;
+const { createClient } = require('redis');
 
 AppDataSource.initialize()
   .then(async () => {
@@ -32,9 +33,27 @@ AppDataSource.initialize()
       },
     });
 
+    const client = createClient({
+      url: 'redis://localhost:6379',
+    });
+
+    client.on('connect', async () => {
+      console.log('Redis client connected successfully');
+    });
+
+    client.on('error', (err) => {
+      console.error('Redis client connection error:', err);
+    });
+
+    try {
+      await client.connect();
+    } catch (error) {
+      console.error('Redis client connection failed', error);
+    }
+
     app.use(authMiddleware);
 
-    events(io);
+    events(io, client);
     routes(app, io);
 
     app.use(errorHandler);

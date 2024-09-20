@@ -273,17 +273,26 @@ class PostController {
       const { id } = req.userToken;
       const { postId } = req.params;
 
-      await emotionPostRepository.delete({
-        userId: id,
-        postId: postId,
+      const emotionPost = await emotionPostRepository.findOne({
+        where: {
+          userId: id,
+          postId: postId,
+        },
       });
 
-      io.emit('cancelReleasedEmotion', {
-        postId,
-        userId: id,
-      });
+      if (emotionPost) {
+        await emotionPostRepository.delete(emotionPost);
+        io.emit('cancelReleasedEmotion', {
+          postId,
+          userId: id,
+        });
 
-      return res.status(204).json();
+        return res.status(204).json();
+      }
+
+      const error = new Error('Not found this emotion post');
+      error.status = 404;
+      throw error;
     } catch (error) {
       next(error);
     }
