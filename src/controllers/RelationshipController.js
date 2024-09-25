@@ -318,6 +318,7 @@ class RelationshipController {
 
   // [DELETE] /relationships/request/:senderId
   async refuseFriendRequest(req, res, next) {
+    const { io } = req;
     const { id } = req.userToken;
     const { senderId } = req.params;
 
@@ -330,6 +331,8 @@ class RelationshipController {
 
     if (friendRequest) {
       await friendRequestRepository.remove(friendRequest);
+
+      io.to(`user-${senderId}`).emit('friendRequestDenied', id);
 
       return res.status(204).json();
     }

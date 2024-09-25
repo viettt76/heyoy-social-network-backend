@@ -75,7 +75,7 @@ class PostController {
         lastName: userInfo.lastName,
         avatar: userInfo.avatar,
         groupName: '',
-        createAt: post.createdAt,
+        createdAt: post.createdAt,
         visibility: post.visibility,
         content: post.content,
         emotions: [],
@@ -90,7 +90,7 @@ class PostController {
       lastName: userInfo.lastName,
       avatar: userInfo.avatar,
       groupName: '',
-      createAt: post.createdAt,
+      createdAt: post.createdAt,
       visibility: post.visibility,
       content: post.content,
       emotions: [],
@@ -419,7 +419,7 @@ class PostController {
         },
       },
       order: {
-        [sortField]: sortType,
+        [sortField || 'createdAt']: sortType || 'DESC',
       },
     });
 
