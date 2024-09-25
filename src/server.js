@@ -11,6 +11,7 @@ const authMiddleware = require('./middlewares/authMiddleware');
 const events = require('./events');
 require('events').EventEmitter.prototype._maxListeners = 100;
 const { createClient } = require('redis');
+require('express-async-errors');
 
 AppDataSource.initialize()
   .then(async () => {

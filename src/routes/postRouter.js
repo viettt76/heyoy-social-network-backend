@@ -1,23 +1,26 @@
 const express = require('express');
 const postController = require('../controllers/PostController');
+const ioMiddleware = require('../middlewares/ioMiddleware');
 
 const postRouter = (io) => {
   const router = express.Router();
 
-  router.post('/', (req, res, next) => postController.post(req, res, next, io));
+  router.post('/', ioMiddleware(io), postController.post);
   router.get('/', postController.getAll);
   router.get('/emotions', postController.getEmotions);
-  router.put('/emotion/:postId', (req, res, next) =>
-    postController.releaseEmotion(req, res, next, io)
+  router.put(
+    '/emotion/:postId',
+    ioMiddleware(io),
+    postController.releaseEmotion
   );
-  router.delete('/emotion/:postId', (req, res, next) =>
-    postController.cancelReleasedEmotion(req, res, next, io)
+  router.delete(
+    '/emotion/:postId',
+    ioMiddleware(io),
+    postController.cancelReleasedEmotion
   );
   router.get('/me', postController.myPosts);
   router.get('/comments/:postId', postController.getComments);
-  router.post('/comment', (req, res, next) =>
-    postController.comment(req, res, next, io)
-  );
+  router.post('/comment', ioMiddleware(io), postController.comment);
 
   return router;
 };

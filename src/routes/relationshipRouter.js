@@ -1,24 +1,29 @@
 const express = require('express');
 const relationshipController = require('../controllers/RelationshipController');
+const ioMiddleware = require('../middlewares/ioMiddleware');
 
 const relationshipRouter = (io) => {
   const router = express.Router();
 
   router.get('/friends', relationshipController.friends);
   router.get('/suggestion', relationshipController.suggestion);
-  router.post('/request', (req, res, next) =>
-    relationshipController.request(req, res, next, io)
-  );
+  router.post('/request', ioMiddleware(io), relationshipController.request);
   router.get('/request', relationshipController.friendRequests);
   router.delete(
     '/request/:senderId',
     relationshipController.refuseFriendRequest
   );
-  router.post('/accept', (req, res, next) =>
-    relationshipController.accept(req, res, next, io)
+  router.post('/accept', ioMiddleware(io), relationshipController.accept);
+  router.delete(
+    '/:friendId',
+    ioMiddleware(io),
+    relationshipController.unfriend
   );
-  router.delete('/:friendId', (req, res, next) =>
-    relationshipController.delete(req, res, next, io)
+  router.get('/sent-requests', relationshipController.sentFriendRequests);
+  router.delete(
+    '/sent-request/:receiverId',
+    ioMiddleware(io),
+    relationshipController.cancelFriendRequest
   );
 
   return router;
