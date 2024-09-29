@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroupChat = void 0;
 const typeorm_1 = require("typeorm");
+const GroupMember_1 = require("./GroupMember");
 let GroupChat = class GroupChat {
 };
 exports.GroupChat = GroupChat;
@@ -38,6 +39,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], GroupChat.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => GroupMember_1.GroupMember, groupMember => groupMember.groupChat),
+    __metadata("design:type", Array)
+], GroupChat.prototype, "members", void 0);
 exports.GroupChat = GroupChat = __decorate([
     (0, typeorm_1.Entity)({ name: 'group_chat' })
 ], GroupChat);

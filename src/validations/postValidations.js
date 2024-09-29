@@ -33,6 +33,14 @@ const cancelReleasedEmotion = (req, res, next) => {
   validationHandler(correctValidation, req.params, res, next);
 };
 
+const getUserPosts = (req, res, next) => {
+  const correctValidation = Joi.object({
+    userId: Joi.string().uuid().required(),
+  });
+
+  validationHandler(correctValidation, req.params, res, next);
+};
+
 const getComments = (req, res, next) => {
   const correctValidation = Joi.object({
     postId: Joi.string().uuid().required(),
@@ -62,6 +70,7 @@ module.exports = {
   post,
   releaseEmotion,
   cancelReleasedEmotion,
+  getUserPosts,
   getComments,
   comment,
 };

@@ -21,7 +21,11 @@ const postRouter = (io) => {
     ioMiddleware(io),
     postController.cancelReleasedEmotion
   );
-  router.get('/me', postController.myPosts);
+  router.get(
+    '/user/:userId',
+    postValidations.getUserPosts,
+    postController.getUserPosts
+  );
   router.get(
     '/comments/:postId',
     postValidations.getComments,

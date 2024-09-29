@@ -49,6 +49,7 @@ class RelationshipController {
         'user.homeTown as homeTown',
         'user.school as school',
         'user.workplace as workplace',
+        'user.avatar as avatar',
       ])
       .innerJoin(
         Relationship,
@@ -89,6 +90,7 @@ class RelationshipController {
         'user.homeTown',
         'user.school',
         'user.workplace',
+        'user.avatar',
       ])
       .leftJoinAndSelect('user.relationshipAsUser1', 'r1')
       .leftJoinAndSelect('user.relationshipAsUser2', 'r2')
@@ -192,6 +194,7 @@ class RelationshipController {
           homeTown: cur.user_homeTown,
           school: cur.user_school,
           workplace: cur.user_workplace,
+          avatar: cur.user_avatar,
           numberOfCommonFriends: parseInt(cur.commonFriends),
           commonFriends:
             parseInt(cur.commonFriends) > 0
@@ -291,6 +294,7 @@ class RelationshipController {
         'user.homeTown as homeTown',
         'user.school as school',
         'user.workplace as workplace',
+        'user.avatar as avatar',
       ])
       .innerJoin(
         FriendRequest,
@@ -427,6 +431,7 @@ class RelationshipController {
         'user.homeTown as homeTown',
         'user.school as school',
         'user.workplace as workplace',
+        'user.avatar as avatar',
       ])
       .innerJoin(
         FriendRequest,

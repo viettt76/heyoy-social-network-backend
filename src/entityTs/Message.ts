@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from './User';
 
 @Entity({ name: 'message' })
 export class Message {
@@ -25,4 +26,8 @@ export class Message {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'sender', referencedColumnName: 'id'})
+  senderInfo: User
 }

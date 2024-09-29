@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { GroupMember } from './GroupMember';
 
 @Entity({ name: 'group_chat' })
 export class GroupChat {
@@ -19,4 +20,8 @@ export class GroupChat {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @OneToMany(() => GroupMember, groupMember => groupMember.groupChat)
+  members: GroupMember[];
+
 }

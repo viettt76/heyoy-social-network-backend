@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PictureOfPost = void 0;
 const typeorm_1 = require("typeorm");
+const Post_1 = require("./Post");
 let PictureOfPost = class PictureOfPost {
 };
 exports.PictureOfPost = PictureOfPost;
@@ -34,6 +35,11 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], PictureOfPost.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => Post_1.Post),
+    (0, typeorm_1.JoinColumn)({ name: 'postId', referencedColumnName: 'id' }),
+    __metadata("design:type", Post_1.Post)
+], PictureOfPost.prototype, "visibility", void 0);
 exports.PictureOfPost = PictureOfPost = __decorate([
     (0, typeorm_1.Entity)({ name: 'picture_of_post' })
 ], PictureOfPost);

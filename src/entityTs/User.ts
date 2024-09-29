@@ -11,6 +11,8 @@ import {
   import { Relationship } from './Relationship';
   import { Comment } from './Comment';
 import { FriendRequest } from './FriendRequest';
+import { GroupMember } from './GroupMember';
+import { Message } from './Message';
   
   @Entity('user')
   export class User {
@@ -74,5 +76,11 @@ import { FriendRequest } from './FriendRequest';
   
     @OneToMany(() => Comment, comment => comment.commentatorInfo)
     comments: Comment[];
+
+    @OneToMany(() => GroupMember, groupMember => groupMember.user)
+    groupMembers: GroupMember[];
+
+    @OneToMany(() => Message, message => message.senderInfo)
+    messages: Message[];
   }
   

@@ -1,11 +1,15 @@
 const { AppDataSource } = require('../data-source');
 const { User } = require('../entity/User');
+const { PictureOfPost } = require('../entity/PictureOfPost');
+const ApiError = require('../utils/ApiError');
+const { Post } = require('../entity/Post');
 
 const userRepository = AppDataSource.getRepository(User);
+const pictureOfPostRepository = AppDataSource.getRepository(PictureOfPost);
 
 class UserController {
-  // [GET] /user/personal-info
-  async getPersonalInfo(req, res, next) {
+  // [GET] /user/my-info
+  async getMyInfo(req, res, next) {
     const { id } = req.userToken;
 
     const user = await userRepository.findOneBy({
@@ -32,8 +36,8 @@ class UserController {
     }
   }
 
-  // [PUT] /user/personal-info
-  async updatePersonalInfo(req, res, next) {
+  // [PUT] /user/my-info
+  async updateMyInfo(req, res, next) {
     const { id } = req.userToken;
     const { homeTown, school, workplace, avatar, birthday } = req.body;
     const user = await userRepository.findOneBy({
@@ -54,6 +58,44 @@ class UserController {
     }
 
     throw new ApiError(404, "Couldn't update personal info");
+  }
+
+  // [GET] /user/user-info
+  async getUserInfo(req, res, next) {
+    const { userId } = req.params;
+
+    const user = await userRepository.findOneBy({
+      id: userId,
+    });
+
+    if (user) {
+      return res.status(200).json({
+        id: user.id,
+        lastName: user.lastName,
+        firstName: user.firstName,
+        birthday: user.birthday,
+        homeTown: user.homeTown,
+        school: user.school,
+        workplace: user.workplace,
+        avatar: user.avatar,
+      });
+    }
+    throw new ApiError(404, "Couldn't find user");
+  }
+
+  // [GET] /user/pictures/:userId
+  async getPictures(req, res, next) {
+    const { userId } = req.params;
+
+    const pictures = await pictureOfPostRepository
+      .createQueryBuilder('pictures')
+      .innerJoin(Post, 'post', 'pictures.postId = post.id')
+      .innerJoin(User, 'user', 'post.poster = user.id')
+      .where('user.id = :userId', { userId })
+      .select(['pictures.id as pictureId', 'pictures.picture as pictureUrl'])
+      .getRawMany();
+
+    res.status(200).json(pictures);
   }
 }
 

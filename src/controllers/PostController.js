@@ -295,9 +295,9 @@ class PostController {
     throw new ApiError(404, 'Not found this emotion post');
   }
 
-  // [GET] /posts/me
-  async myPosts(req, res, next) {
-    const { id } = req.userToken;
+  // [GET] /posts/user/:userId
+  async getUserPosts(req, res, next) {
+    const { userId } = req.params;
 
     const posts = await postRepository
       .createQueryBuilder('post')
@@ -321,7 +321,7 @@ class PostController {
           .leftJoin(EmotionType, 'et', 'et.id = ep.emotionTypeId')
           .select('et.id')
           .where('ep.userId = :userId AND ep.postId = post.id', {
-            userId: id,
+            userId,
           });
       }, 'currentEmotionId')
       .addSelect((qb) => {
@@ -331,10 +331,10 @@ class PostController {
           .leftJoin(EmotionType, 'et', 'et.id = ep.emotionTypeId')
           .select('et.name')
           .where('ep.userId = :userId AND ep.postId = post.id', {
-            userId: id,
+            userId,
           });
       }, 'currentEmotionName')
-      .where('post.poster = :id', { id })
+      .where('post.poster = :id', { id: userId })
       .groupBy('post.id')
       .orderBy('post.createdAt', 'DESC')
       .take(10)

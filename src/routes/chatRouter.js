@@ -17,6 +17,24 @@ const chatRouter = (io) => {
     ioMiddleware(io),
     chatController.sendMessage
   );
+  router.post(
+    '/group-chat',
+    chatValidations.createGroupChat,
+    ioMiddleware(io),
+    chatController.createGroupChat
+  );
+  router.get('/group-chat', chatController.getGroupChats);
+  router.get(
+    '/group-chat/messages/:groupChatId',
+    chatValidations.getMessagesOfGroupChat,
+    chatController.getMessagesOfGroupChat
+  );
+  router.post(
+    '/group-chat/message',
+    chatValidations.sendGroupChatMessage,
+    ioMiddleware(io),
+    chatController.sendGroupChatMessage
+  );
 
   return router;
 };

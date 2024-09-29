@@ -17,4 +17,9 @@ export class PictureOfPost {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @ManyToOne(() => Post)
+  @JoinColumn({ name: 'postId', referencedColumnName: 'id' })
+  visibility!: Post;
+
 }

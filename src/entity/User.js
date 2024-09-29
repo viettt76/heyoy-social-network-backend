@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const Relationship_1 = require("./Relationship");
 const Comment_1 = require("./Comment");
 const FriendRequest_1 = require("./FriendRequest");
+const GroupMember_1 = require("./GroupMember");
 let User = class User {
 };
 exports.User = User;
@@ -96,6 +97,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => Comment_1.Comment, comment => comment.commentatorInfo),
     __metadata("design:type", Array)
 ], User.prototype, "comments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => GroupMember_1.GroupMember, groupMember => groupMember.user),
+    __metadata("design:type", Array)
+], User.prototype, "groupMembers", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)('user')
 ], User);

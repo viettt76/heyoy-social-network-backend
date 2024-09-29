@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const postEvents = require('./postEvents');
 const friendEvents = require('./friendEvents');
+const chatEvents = require('./chatEvents');
 
 const events = async (io, client) => {
   io.on('connection', async (socket) => {
@@ -24,6 +25,7 @@ const events = async (io, client) => {
 
           postEvents(socket);
           friendEvents(socket, io, client, userToken);
+          chatEvents(socket);
         } catch (error) {
           socket.disconnect();
         }

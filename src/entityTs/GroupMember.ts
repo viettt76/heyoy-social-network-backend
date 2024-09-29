@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { GroupChat } from './GroupChat';
+import { User } from './User';
 
 @Entity({ name: 'group_member' })
 export class GroupMember {
@@ -19,4 +21,12 @@ export class GroupMember {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @ManyToOne(() => GroupChat)
+  @JoinColumn({ name: 'groupChatId', referencedColumnName: 'id'})
+  groupChat: GroupChat;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'memberId', referencedColumnName: 'id'})
+  user: User;
 }
