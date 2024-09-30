@@ -2,11 +2,11 @@ const { DataSource } = require('typeorm');
 
 const AppDataSource = new DataSource({
   type: 'mysql',
-  host: 'localhost',
+  host: 'johnny.heliohost.org',
   port: 3306,
-  username: 'root',
-  password: null,
-  database: 'social_network',
+  username: 'viettt75_admin',
+  password: 'CZuAa4@zzxoi',
+  database: 'viettt75_heyoy_social',
   synchronize: false,
   logging: false,
   entities: ['src/entity/*.js'],
