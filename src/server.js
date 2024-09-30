@@ -31,7 +31,7 @@ AppDataSource.initialize()
     const io = socketIo(server, {
       cors: {
         credentials: true,
-        origin: 'https:/viettt76.github.io',
+        origin: 'https://viettt76.github.io',
       },
     });
 
