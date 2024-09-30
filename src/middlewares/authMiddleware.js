@@ -17,7 +17,7 @@ const authMiddleware = (req, res, next) => {
       { expiresIn: 15 * 60 }
     );
 
-    res.cookie('token', newToken, { httpOnly: true });
+    res.cookie('token', newToken, { httpOnly: true, sameSite: 'None' });
 
     req.userToken = userToken;
   };
