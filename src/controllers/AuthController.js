@@ -63,10 +63,15 @@ class AuthController {
         expiresIn: 15 * 24 * 60 * 60,
       });
 
-      res.cookie('token', token, { httpOnly: true, sameSite: 'None' });
+      res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'None',
+        secure: true,
+      });
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         sameSite: 'None',
+        secure: true,
       });
       res.status(200).json();
     } else {
