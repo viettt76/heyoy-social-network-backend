@@ -26,38 +26,42 @@ AppDataSource.initialize()
         origin: 'http://localhost:3000',
       })
     );
-    const server = http.createServer(app);
-    const io = socketIo(server, {
-      cors: {
-        credentials: true,
-        origin: 'http://localhost:3000',
-      },
+    // const server = http.createServer(app);
+    // const io = socketIo(server, {
+    //   cors: {
+    //     credentials: true,
+    //     origin: 'http://localhost:3000',
+    //   },
+    // });
+
+    // const client = createClient({
+    //   url: 'rediss://red-crt8tedumphs73fkh9j0:XQ4IBNaHUzpA0vXUlB2bclniQl0YSYxu@oregon-redis.render.com:6379',
+    // });
+
+    // client.on('connect', async () => {
+    //   console.log('Redis client connected successfully');
+    // });
+
+    // client.on('error', (err) => {
+    //   console.error('Redis client connection error:', err);
+    // });
+
+    // try {
+    //   await client.connect();
+    // } catch (error) {
+    //   console.error('Redis client connection failed', error);
+    // }
+
+    // app.use(authMiddleware);
+
+    // events(io, client);
+    // routes(app, io);
+
+    // app.use(errorHandler);
+
+    app.get('/ip', (req, res) => {
+      res.send(req.ip);
     });
-
-    const client = createClient({
-      url: 'rediss://red-crt8tedumphs73fkh9j0:XQ4IBNaHUzpA0vXUlB2bclniQl0YSYxu@oregon-redis.render.com:6379',
-    });
-
-    client.on('connect', async () => {
-      console.log('Redis client connected successfully');
-    });
-
-    client.on('error', (err) => {
-      console.error('Redis client connection error:', err);
-    });
-
-    try {
-      await client.connect();
-    } catch (error) {
-      console.error('Redis client connection failed', error);
-    }
-
-    app.use(authMiddleware);
-
-    events(io, client);
-    routes(app, io);
-
-    app.use(errorHandler);
 
     server.listen(port, () => {
       console.log('Server running on port ' + port);
