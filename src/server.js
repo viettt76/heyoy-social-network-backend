@@ -32,6 +32,7 @@ AppDataSource.initialize()
       cors: {
         credentials: true,
         origin: 'https://viettt76.github.io',
+        methods: ['GET', 'POST'],
       },
     });
 
