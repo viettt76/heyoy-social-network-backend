@@ -35,7 +35,7 @@ AppDataSource.initialize()
     });
 
     const client = createClient({
-      url: 'redis://localhost:6379',
+      url: 'rediss://red-crt8tedumphs73fkh9j0:XQ4IBNaHUzpA0vXUlB2bclniQl0YSYxu@oregon-redis.render.com:6379',
     });
 
     client.on('connect', async () => {
