@@ -37,6 +37,7 @@ AppDataSource.initialize()
         credentials: true,
       },
       transports: ['polling', 'websocket'],
+      pingTimeout: 60000,
     });
 
     const client = createClient({
