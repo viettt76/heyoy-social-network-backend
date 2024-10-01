@@ -30,10 +30,11 @@ AppDataSource.initialize()
     const server = http.createServer(app);
     const io = socketIo(server, {
       cors: {
-        credentials: true,
         origin: 'https://viettt76.github.io',
         methods: ['GET', 'POST'],
+        credentials: true,
       },
+      transports: ['polling', 'websocket'],
     });
 
     const client = createClient({
