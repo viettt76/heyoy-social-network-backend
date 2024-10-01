@@ -36,7 +36,7 @@ AppDataSource.initialize()
         methods: ['GET', 'POST'],
         credentials: true,
       },
-      transports: ['polling', 'websocket'],
+      transports: ['websocket'],
       pingTimeout: 60000,
     });
 
