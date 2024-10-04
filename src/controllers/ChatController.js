@@ -4,6 +4,7 @@ const { Relationship } = require('../entity/Relationship');
 const { GroupChat } = require('../entity/GroupChat');
 const { GroupMember } = require('../entity/GroupMember');
 const { User } = require('../entity/User');
+const { ApiError } = require('../utils/ApiError');
 
 const relationshipRepository = AppDataSource.getRepository(Relationship);
 const messageRepository = AppDataSource.getRepository(Message);
@@ -292,11 +293,15 @@ class ChatController {
       },
     });
 
-    groupChat.avatar = avatar;
+    if (groupChat) {
+      groupChat.avatar = avatar;
 
-    await groupChatRepository.save(groupChat);
+      await groupChatRepository.save(groupChat);
 
-    res.status(204).json();
+      res.status(204).json();
+    }
+
+    throw new ApiError(404, 'Not found group chat');
   }
 }
 
