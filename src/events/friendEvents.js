@@ -58,7 +58,7 @@ const friendEvents = async (socket, io, client, userToken) => {
       ...offlineFriends.slice(0, 20 - onlineFriends.length),
     ].slice(0, 20);
 
-    const result = Promise.all(
+    const result = await Promise.all(
       totalFriends.map(async (friendId) => {
         const fr = await userRepository.findOne({
           where: { id: friendId },
@@ -98,6 +98,11 @@ const friendEvents = async (socket, io, client, userToken) => {
   const intervalId = setInterval(() => {
     getFriendsOnline();
   }, 20000);
+
+  socket.on('checkFriendOnline', async (friendId) => {
+    const result = await isUserOnline(friendId);
+    io.to(`user-${userToken?.id}`).emit('isFriendOnline', result);
+  });
 
   socket.on('disconnect', async () => {
     await setUserOffline(userToken.id);

@@ -1,10 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Index, Unique, BeforeInsert } from 'typeorm';
 import { User } from './User'; 
 import { RelationshipType } from './RelationshipType'; 
 
 @Entity({ name: 'relationship' })
 @Index('IDX_RELATIONSHIP_USER1', ['user1'])
 @Index('IDX_RELATIONSHIP_USER2', ['user2'])
+@Unique(['user1', 'user2'])
 export class Relationship {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
@@ -23,6 +24,13 @@ export class Relationship {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @BeforeInsert()
+    normalizeUserOrder() {
+        if (this.user1 > this.user2) {
+            [this.user1, this.user2] = [this.user2, this.user1];
+        }
+    }
 
   @ManyToOne(() => User, user => user.relationshipAsUser1)
   @JoinColumn({ name: 'user1', referencedColumnName: 'id' })

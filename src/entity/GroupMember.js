@@ -51,5 +51,6 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], GroupMember.prototype, "user", void 0);
 exports.GroupMember = GroupMember = __decorate([
-    (0, typeorm_1.Entity)({ name: 'group_member' })
+    (0, typeorm_1.Entity)({ name: 'group_member' }),
+    (0, typeorm_1.Unique)(['groupChatId', 'memberId'])
 ], GroupMember);

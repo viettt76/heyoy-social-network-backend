@@ -30,14 +30,14 @@ class PostController {
     });
 
     if (images?.length > 0) {
-      const createPicturePromise = images.map(async (image) => {
-        await pictureOfPostRepository.save({
-          postId: post?.id,
-          picture: image,
-        });
-      });
-
-      await Promise.all(createPicturePromise);
+      await Promise.all(
+        images.map((image) => {
+          pictureOfPostRepository.save({
+            postId: post?.id,
+            picture: image,
+          });
+        })
+      );
     }
 
     const friends = await relationshipRepository

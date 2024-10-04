@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { User } from './User';
 
 @Entity({ name: 'friend_request' })
+@Unique(['senderId', 'receiverId'])
 export class FriendRequest {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

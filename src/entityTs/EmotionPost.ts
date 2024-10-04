@@ -5,12 +5,14 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
-    JoinColumn
+    JoinColumn,
+    Unique
   } from "typeorm";
   import { EmotionType } from './EmotionType';
 import { User } from './User';
   
   @Entity('emotion_post')
+  @Unique(['postId', 'userId'])
   export class EmotionPost {
   
     @PrimaryGeneratedColumn('uuid')

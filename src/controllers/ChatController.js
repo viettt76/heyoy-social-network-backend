@@ -155,6 +155,149 @@ class ChatController {
 
     res.status(201).json();
   }
+
+  // [GET] /chat/group-chat/members
+  async getGroupMembers(req, res, next) {
+    const { groupChatId } = req.params;
+
+    const members = await groupMemberRepository.find({
+      relations: ['user'],
+      where: {
+        groupChatId: groupChatId,
+      },
+      select: {
+        id: true,
+        memberId: true,
+        user: {
+          id: true,
+          lastName: true,
+          firstName: true,
+          avatar: true,
+        },
+      },
+    });
+
+    res.status(200).json(members);
+  }
+
+  // [POST] /chat/group-chat/members/:groupChatId
+  async updateGroupMembers(req, res, next) {
+    const { groupChatId, members } = req.body;
+
+    await Promise.all(
+      members?.map((member) => {
+        groupMemberRepository.save({
+          groupChatId,
+          memberId: member,
+        });
+      })
+    );
+
+    res.status(201).json();
+  }
+
+  // [GET] /chat/latest
+  async getLatestConversation(req, res, next) {
+    const { id } = req.userToken;
+
+    const privateConversations = await messageRepository
+      .createQueryBuilder('message')
+      .leftJoin(
+        User,
+        'friend',
+        '(friend.id = message.receiver OR friend.id = message.sender) AND friend.id != :id',
+        { id }
+      )
+      .select([
+        'LEAST(message.sender, message.receiver) AS participant1',
+        'GREATEST(message.sender, message.receiver) AS participant2',
+        'friend.id AS friendId',
+        'friend.firstName AS friendFirstName',
+        'friend.lastName AS friendLastName',
+        'friend.avatar AS friendAvatar',
+        'message.id as id',
+        'message.sender as senderId',
+        'message.message as message',
+        'message.picture as picture',
+        'message.createdAt AS createdAt',
+      ])
+      .where(
+        '(message.sender = :userId OR message.receiver = :userId) AND recipientGroup IS NULL',
+        {
+          userId: id,
+        }
+      )
+      .andWhere(
+        'message.createdAt IN ' +
+          `(SELECT MAX(createdAt) FROM message 
+          WHERE (sender = :userId OR receiver = :userId)
+          GROUP BY LEAST(sender, receiver), GREATEST(sender, receiver))`,
+        { userId: id }
+      )
+      .groupBy('participant1, participant2')
+      .orderBy('message.createdAt', 'DESC')
+      .getRawMany();
+
+    const groupConversations = await messageRepository
+      .createQueryBuilder('message')
+      .innerJoin(
+        GroupMember,
+        'groupMember',
+        'groupMember.groupChatId = message.recipientGroup'
+      )
+      .leftJoin(GroupChat, 'groupChat', 'groupChat.id = message.recipientGroup')
+      .leftJoin(User, 'sender', 'message.sender = sender.id')
+      .select([
+        'message.id as id',
+        'message.message as message',
+        'message.picture as picture',
+        'message.recipientGroup as groupId',
+        'groupChat.administratorId as administratorId',
+        'groupChat.name as groupName',
+        'groupChat.avatar as groupAvatar',
+        'sender.id as senderId',
+        'sender.firstName as senderFirstName',
+        'sender.lastName as senderLastName',
+        'message.createdAt as createdAt',
+      ])
+      .where('groupMember.memberId = :userId', { userId: id })
+      .andWhere('message.recipientGroup IS NOT NULL')
+      .andWhere(
+        'message.createdAt = (SELECT MAX(innerMsg.createdAt) FROM message innerMsg WHERE innerMsg.recipientGroup = message.recipientGroup)'
+      )
+      .orderBy('message.createdAt', 'DESC')
+      .getRawMany();
+
+    const combinedConversations = [
+      ...privateConversations,
+      ...groupConversations,
+    ];
+
+    combinedConversations.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    res.status(200).json(combinedConversations);
+  }
+
+  // [PATCH] /chat/group-chat/avatar/:groupChatId
+  async updateGroupChatAvatar(req, res, next) {
+    const { groupChatId } = req.params;
+    const { avatar } = req.body;
+
+    const groupChat = await groupChatRepository.findOne({
+      where: {
+        id: groupChatId,
+      },
+    });
+
+    groupChat.avatar = avatar;
+
+    await groupChatRepository.save(groupChat);
+
+    res.status(204).json();
+  }
 }
 
 module.exports = new ChatController();

@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Message = void 0;
 const typeorm_1 = require("typeorm");
+const User_1 = require("./User");
 let Message = class Message {
 };
 exports.Message = Message;
@@ -46,6 +47,12 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Message.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => User_1.User),
+    (0, typeorm_1.JoinColumn)({ name: 'sender', referencedColumnName: 'id' }),
+    __metadata("design:type", User_1.User)
+], Message.prototype, "senderInfo", void 0);
 exports.Message = Message = __decorate([
-    (0, typeorm_1.Entity)({ name: 'message' })
+    (0, typeorm_1.Entity)({ name: 'message' }),
+    (0, typeorm_1.Index)('IDX_MESSAGE_SENDER_RECEIVER', ['sender', 'receiver'])
 ], Message);

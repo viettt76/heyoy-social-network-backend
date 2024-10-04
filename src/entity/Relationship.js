@@ -14,6 +14,11 @@ const typeorm_1 = require("typeorm");
 const User_1 = require("./User");
 const RelationshipType_1 = require("./RelationshipType");
 let Relationship = class Relationship {
+    normalizeUserOrder() {
+        if (this.user1 > this.user2) {
+            [this.user1, this.user2] = [this.user2, this.user1];
+        }
+    }
 };
 exports.Relationship = Relationship;
 __decorate([
@@ -41,6 +46,12 @@ __decorate([
     __metadata("design:type", Date)
 ], Relationship.prototype, "updatedAt", void 0);
 __decorate([
+    (0, typeorm_1.BeforeInsert)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Relationship.prototype, "normalizeUserOrder", null);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => User_1.User, user => user.relationshipAsUser1),
     (0, typeorm_1.JoinColumn)({ name: 'user1', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
@@ -58,5 +69,6 @@ __decorate([
 exports.Relationship = Relationship = __decorate([
     (0, typeorm_1.Entity)({ name: 'relationship' }),
     (0, typeorm_1.Index)('IDX_RELATIONSHIP_USER1', ['user1']),
-    (0, typeorm_1.Index)('IDX_RELATIONSHIP_USER2', ['user2'])
+    (0, typeorm_1.Index)('IDX_RELATIONSHIP_USER2', ['user2']),
+    (0, typeorm_1.Unique)(['user1', 'user2'])
 ], Relationship);

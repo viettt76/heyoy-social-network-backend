@@ -51,5 +51,6 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], EmotionPost.prototype, "userInfo", void 0);
 exports.EmotionPost = EmotionPost = __decorate([
-    (0, typeorm_1.Entity)('emotion_post')
+    (0, typeorm_1.Entity)('emotion_post'),
+    (0, typeorm_1.Unique)(['postId', 'userId'])
 ], EmotionPost);

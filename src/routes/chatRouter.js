@@ -35,6 +35,22 @@ const chatRouter = (io) => {
     ioMiddleware(io),
     chatController.sendGroupChatMessage
   );
+  router.get(
+    '/group-chat/members/:groupChatId',
+    chatValidations.getGroupMembers,
+    chatController.getGroupMembers
+  );
+  router.post(
+    '/group-chat/members',
+    chatValidations.updateGroupMembers,
+    chatController.updateGroupMembers
+  );
+  router.get('/latest', chatController.getLatestConversation);
+  router.patch(
+    '/group-chat/avatar/:groupChatId',
+    chatValidations.updateGroupChatAvatar,
+    chatController.updateGroupChatAvatar
+  );
 
   return router;
 };

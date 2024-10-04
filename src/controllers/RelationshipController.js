@@ -217,18 +217,19 @@ class RelationshipController {
     const result = await Promise.all(
       formattedSuggestions.map(async (suggestion) => {
         if (suggestion.numberOfCommonFriends > 0) {
-          const promises = suggestion.commonFriends.map(async (friendId) => {
-            return await userRepository.findOne({
-              where: { id: friendId },
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-              },
-            });
-          });
-          const friendsDetails = await Promise.all(promises);
+          const friendsDetails = await Promise.all(
+            suggestion.commonFriends.map(async (friendId) => {
+              return await userRepository.findOne({
+                where: { id: friendId },
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  avatar: true,
+                },
+              });
+            })
+          );
           suggestion.commonFriends = friendsDetails;
         }
         return suggestion;

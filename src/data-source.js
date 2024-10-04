@@ -1,12 +1,13 @@
+require('dotenv').config();
 const { DataSource } = require('typeorm');
 
 const AppDataSource = new DataSource({
   type: 'mysql',
-  host: 'johnny.heliohost.org',
+  host: process.env.DB_HOST,
   port: 3306,
-  username: 'viettt75_admin',
-  password: 'CZuAa4@zzxoi',
-  database: 'viettt75_heyoy_social',
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD || null,
+  database: process.env.DB_NAME,
   synchronize: false,
   logging: false,
   entities: ['src/entity/*.js'],

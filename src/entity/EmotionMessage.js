@@ -39,5 +39,6 @@ __decorate([
     __metadata("design:type", Date)
 ], EmotionMessage.prototype, "updatedAt", void 0);
 exports.EmotionMessage = EmotionMessage = __decorate([
-    (0, typeorm_1.Entity)({ name: 'emotion_message' })
+    (0, typeorm_1.Entity)({ name: 'emotion_message' }),
+    (0, typeorm_1.Unique)(['messageId', 'userId'])
 ], EmotionMessage);

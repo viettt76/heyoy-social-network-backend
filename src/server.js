@@ -21,9 +21,8 @@ AppDataSource.initialize()
     app.use(express.json());
     app.use(
       cors({
+        origin: process.env.FRONTEND_URL,
         credentials: true,
-        // origin: 'https://viettt76.github.io',
-        origin: 'http://localhost:3000',
       })
     );
     app.use(cookieParser());
@@ -31,17 +30,13 @@ AppDataSource.initialize()
     const server = http.createServer(app);
     const io = socketIo(server, {
       cors: {
-        origin: 'http://localhost:3000',
-        // origin: 'https://viettt76.github.io',
-        methods: ['GET', 'POST'],
+        origin: process.env.FRONTEND_URL,
         credentials: true,
       },
-      transports: ['websocket'],
-      pingTimeout: 60000,
     });
 
     const client = createClient({
-      url: 'redis://default:70DLXRMaerOwnWHxpOqISbgFbHw60Kcx@redis-10320.c295.ap-southeast-1-1.ec2.redns.redis-cloud.com:10320',
+      url: process.env.REDIS_URL,
     });
 
     client.on('connect', async () => {
