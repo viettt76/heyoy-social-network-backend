@@ -25,7 +25,7 @@ const events = async (io, client) => {
 
           postEvents(socket);
           friendEvents(socket, io, client, userToken);
-          chatEvents(socket);
+          chatEvents(socket, io);
         } catch (error) {
           socket.disconnect();
         }

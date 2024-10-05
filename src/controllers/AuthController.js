@@ -54,7 +54,9 @@ class AuthController {
       const jwtSecret = process.env.JWT_SECRET;
 
       const payload = {
-        id: user?.id,
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: 'user',
       };
 

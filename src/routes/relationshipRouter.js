@@ -6,7 +6,7 @@ const relationshipValidations = require('../validations/relationshipValidations'
 const relationshipRouter = (io) => {
   const router = express.Router();
 
-  router.get('/friends', relationshipController.friends);
+  router.get('/friends/:userId', relationshipController.friends);
   router.get('/suggestion', relationshipController.suggestion);
   router.post(
     '/request',

@@ -46,5 +46,6 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], FriendRequest.prototype, "receiver", void 0);
 exports.FriendRequest = FriendRequest = __decorate([
-    (0, typeorm_1.Entity)({ name: 'friend_request' })
+    (0, typeorm_1.Entity)({ name: 'friend_request' }),
+    (0, typeorm_1.Unique)(['senderId', 'receiverId'])
 ], FriendRequest);

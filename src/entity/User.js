@@ -16,6 +16,7 @@ const Comment_1 = require("./Comment");
 const FriendRequest_1 = require("./FriendRequest");
 const GroupMember_1 = require("./GroupMember");
 const Message_1 = require("./Message");
+const Notifications_1 = require("./Notifications");
 let User = class User {
 };
 exports.User = User;
@@ -106,6 +107,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => Message_1.Message, message => message.senderInfo),
     __metadata("design:type", Array)
 ], User.prototype, "messages", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Notifications_1.Notifications, notification => notification.receiver),
+    __metadata("design:type", Array)
+], User.prototype, "receiverInfo", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)('user')
 ], User);

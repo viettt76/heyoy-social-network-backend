@@ -12,7 +12,12 @@ const authMiddleware = (req, res, next) => {
     const userToken = jwt.verify(refreshToken, process.env.JWT_SECRET);
 
     const newToken = jwt.sign(
-      { id: userToken.id, role: userToken.role },
+      {
+        id: userToken.id,
+        firstName: userToken.firstName,
+        lastName: userToken.lastName,
+        role: userToken.role,
+      },
       process.env.JWT_SECRET,
       { expiresIn: 15 * 60 }
     );

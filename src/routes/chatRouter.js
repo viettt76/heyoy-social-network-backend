@@ -45,6 +45,11 @@ const chatRouter = (io) => {
     chatValidations.updateGroupMembers,
     chatController.updateGroupMembers
   );
+  router.delete(
+    '/group-chat/member/:groupChatId',
+    chatValidations.leaveGroup,
+    chatController.leaveGroup
+  );
   router.get('/latest', chatController.getLatestConversation);
   router.patch(
     '/group-chat/avatar/:groupChatId',

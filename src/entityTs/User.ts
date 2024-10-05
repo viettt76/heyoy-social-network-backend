@@ -7,12 +7,14 @@ import {
     OneToMany,
     Index,
     DeleteDateColumn,
+    OneToOne,
   } from 'typeorm';
   import { Relationship } from './Relationship';
   import { Comment } from './Comment';
 import { FriendRequest } from './FriendRequest';
 import { GroupMember } from './GroupMember';
 import { Message } from './Message';
+import { Notifications } from './Notifications';
   
   @Entity('user')
   export class User {
@@ -82,5 +84,8 @@ import { Message } from './Message';
 
     @OneToMany(() => Message, message => message.senderInfo)
     messages: Message[];
+
+    @OneToMany(() => Notifications, notification => notification.receiver)
+    receiverInfo: Notification[]
   }
   

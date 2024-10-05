@@ -37,9 +37,10 @@ class RelationshipController {
       .getRawMany();
   }
 
-  // [GET] /relationships/friends
+  // [GET] /relationships/friends/:userId
   friends = async (req, res, next) => {
-    const { id } = req.userToken;
+    // const { id } = req.userToken;
+    const { userId } = req.params;
     const friends = await userRepository
       .createQueryBuilder('user')
       .select([
@@ -55,13 +56,13 @@ class RelationshipController {
         Relationship,
         'r',
         '(r.user1 = :id AND r.user2 = user.id) OR (r.user2 = :id AND r.user1 = user.id)',
-        { id }
+        { id: userId }
       )
       .getRawMany();
 
     const result = await Promise.all(
       friends.map(async (user) => {
-        const commonFriends = await this.commonFriends(id, user.id);
+        const commonFriends = await this.commonFriends(userId, user.id);
         return {
           ...user,
           commonFriends,

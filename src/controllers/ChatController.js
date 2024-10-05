@@ -4,12 +4,17 @@ const { Relationship } = require('../entity/Relationship');
 const { GroupChat } = require('../entity/GroupChat');
 const { GroupMember } = require('../entity/GroupMember');
 const { User } = require('../entity/User');
+const { Notifications } = require('../entity/Notifications');
+const { NotificationType } = require('../entity/NotificationType');
 const { ApiError } = require('../utils/ApiError');
 
 const relationshipRepository = AppDataSource.getRepository(Relationship);
 const messageRepository = AppDataSource.getRepository(Message);
 const groupChatRepository = AppDataSource.getRepository(GroupChat);
 const groupMemberRepository = AppDataSource.getRepository(GroupMember);
+const notificationsRepository = AppDataSource.getRepository(Notifications);
+const notificationTypeRepository =
+  AppDataSource.getRepository(NotificationType);
 
 class ChatController {
   // [GET] /chat/messages?friendId=
@@ -37,7 +42,7 @@ class ChatController {
   // [POST] /chat/message
   async sendMessage(req, res, next) {
     const { io } = req;
-    const { id } = req.userToken;
+    const { id, firstName, lastName } = req.userToken;
     const { friendId, message } = req.body;
     const newMessage = await messageRepository.save({
       sender: id,
@@ -45,7 +50,17 @@ class ChatController {
       message: message,
     });
 
-    io.to(`user-${friendId}`).emit('newMessage', newMessage);
+    const notificationTypes = await notificationTypeRepository.find();
+
+    const notification = await notificationsRepository.save({
+      userId: friendId,
+      senderId: id,
+      type: notificationTypes.find((type) => type.name === 'message')?.id,
+      relatedId: newMessage.id,
+      content: `${lastName} ${firstName} đã gửi cho bạn 1 tin nhắn`,
+    });
+
+    io.to(`user-${friendId}`).emit('newMessage', { newMessage, notification });
 
     res.status(201).json({
       id: newMessage.id,
@@ -181,7 +196,7 @@ class ChatController {
     res.status(200).json(members);
   }
 
-  // [POST] /chat/group-chat/members/:groupChatId
+  // [POST] /chat/group-chat/members
   async updateGroupMembers(req, res, next) {
     const { groupChatId, members } = req.body;
 
@@ -195,6 +210,23 @@ class ChatController {
     );
 
     res.status(201).json();
+  }
+
+  // [DELETE] /chat/group-chat/member/:groupChatId
+  async leaveGroup(req, res, next) {
+    const { id } = req.userToken;
+    const { groupChatId } = req.params;
+
+    const groupMember = await groupMemberRepository.findOne({
+      where: { memberId: id, groupChatId },
+    });
+
+    if (groupMember) {
+      await groupMemberRepository.remove(groupMember);
+      return res.status(204).json();
+    }
+
+    throw new ApiError(404, 'Not found group member');
   }
 
   // [GET] /chat/latest

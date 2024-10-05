@@ -63,6 +63,14 @@ const updateGroupMembers = (req, res, next) => {
   validationHandler(correctValidation, req.body, res, next);
 };
 
+const leaveGroup = (req, res, next) => {
+  const correctValidation = Joi.object({
+    groupChatId: Joi.string().uuid().required(),
+  });
+
+  validationHandler(correctValidation, req.params, res, next);
+};
+
 const updateGroupChatAvatar = (req, res, next) => {
   const correctValidation = Joi.object({
     groupChatId: Joi.string().uuid().required(),
@@ -85,5 +93,6 @@ module.exports = {
   sendGroupChatMessage,
   getGroupMembers,
   updateGroupMembers,
+  leaveGroup,
   updateGroupChatAvatar,
 };

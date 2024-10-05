@@ -2,6 +2,7 @@ const { AppDataSource } = require('../data-source');
 const { RelationshipType } = require('../entity/RelationshipType');
 const { EmotionType } = require('../entity/EmotionType');
 const { PostVisibility } = require('../entity/PostVisibility');
+const { NotificationType } = require('../entity/NotificationType');
 
 async function seed() {
   await AppDataSource.initialize();
@@ -17,6 +18,7 @@ async function seed() {
     'Phẫn nộ',
   ];
   const postVisibilities = ['Bạn bè', 'Công khai', 'Riêng tư'];
+  const notificationTypes = ['message', 'comment', 'like', 'friend request'];
 
   const relationshipTypeRepository =
     AppDataSource.getRepository(RelationshipType);
@@ -46,6 +48,17 @@ async function seed() {
     });
     if (!existingType) {
       await postVisibilityRepository.save({ name });
+    }
+  }
+
+  const notificationTypeRepository =
+    AppDataSource.getRepository(NotificationType);
+  for (const name of notificationTypes) {
+    const existingType = await notificationTypeRepository.findOne({
+      where: { name },
+    });
+    if (!existingType) {
+      await notificationTypeRepository.save({ name });
     }
   }
 
