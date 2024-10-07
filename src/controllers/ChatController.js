@@ -28,6 +28,7 @@ class ChatController {
         'message.sender as sender',
         'message.receiver as receiver',
         'message.message as message',
+        'message.createdAt as createdAt',
       ])
       .where(
         `(sender = :id AND receiver = :friendId) OR (sender = :friendId AND receiver = :id)`
@@ -50,17 +51,17 @@ class ChatController {
       message: message,
     });
 
-    const notificationTypes = await notificationTypeRepository.find();
+    // const notificationTypes = await notificationTypeRepository.find();
 
-    const notification = await notificationsRepository.save({
-      userId: friendId,
-      senderId: id,
-      type: notificationTypes.find((type) => type.name === 'message')?.id,
-      relatedId: newMessage.id,
-      content: `${lastName} ${firstName} đã gửi cho bạn 1 tin nhắn`,
-    });
+    // const notification = await notificationsRepository.save({
+    //   userId: friendId,
+    //   senderId: id,
+    //   type: notificationTypes.find((type) => type.name === 'message')?.id,
+    //   relatedId: newMessage.id,
+    //   content: `${lastName} ${firstName} đã gửi cho bạn 1 tin nhắn`,
+    // });
 
-    io.to(`user-${friendId}`).emit('newMessage', { newMessage, notification });
+    io.to(`user-${friendId}`).emit('newMessage', { newMessage });
 
     res.status(201).json({
       id: newMessage.id,
@@ -128,6 +129,7 @@ class ChatController {
         'sender.firstName as senderFirstName',
         'sender.lastName as senderLastName',
         'sender.avatar as senderAvatar',
+        'message.createdAt as createdAt',
       ])
       .where('recipientGroup = :groupChatId', { groupChatId })
       .orderBy('message.createdAt')
