@@ -163,6 +163,7 @@ class ChatController {
         'sender.firstName as senderFirstName',
         'sender.lastName as senderLastName',
         'sender.avatar as senderAvatar',
+        'message.createdAt as createdAt',
       ])
       .where('message.id = :id', { id: newMessage.id })
       .getRawOne();
