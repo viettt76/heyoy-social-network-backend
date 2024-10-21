@@ -25,6 +25,9 @@ export class Notifications {
   @Column({ default: false })
   isRead: boolean
 
+  @Column({ default: false })
+  isOpenMenu: boolean
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -35,7 +38,7 @@ export class Notifications {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   receiver: User;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'senderId', referencedColumnName: 'id' })
   sender: User;
 

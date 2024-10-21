@@ -45,6 +45,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Notifications.prototype, "isRead", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Notifications.prototype, "isOpenMenu", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Notifications.prototype, "createdAt", void 0);
@@ -58,7 +62,7 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Notifications.prototype, "receiver", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => User_1.User),
+    (0, typeorm_1.ManyToOne)(() => User_1.User),
     (0, typeorm_1.JoinColumn)({ name: 'senderId', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
 ], Notifications.prototype, "sender", void 0);

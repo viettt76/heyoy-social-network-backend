@@ -18,14 +18,14 @@ const authMiddleware = (req, res, next) => {
         lastName: userToken.lastName,
         role: userToken.role,
       },
-      process.env.JWT_SECRET,
-      { expiresIn: 15 * 60 }
+      process.env.JWT_SECRET
     );
 
     res.cookie('token', newToken, {
       httpOnly: true,
       sameSite: 'None',
       secure: true,
+      maxAge: 15 * 60 * 1000,
     });
 
     req.userToken = userToken;

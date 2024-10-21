@@ -60,20 +60,20 @@ class AuthController {
         role: 'user',
       };
 
-      const token = jwt.sign(payload, jwtSecret, { expiresIn: 15 * 60 });
-      const refreshToken = jwt.sign(payload, jwtSecret, {
-        expiresIn: 15 * 24 * 60 * 60,
-      });
+      const token = jwt.sign(payload, jwtSecret);
+      const refreshToken = jwt.sign(payload, jwtSecret);
 
       res.cookie('token', token, {
         httpOnly: true,
         sameSite: 'None',
         secure: true,
+        maxAge: 15 * 60 * 1000
       });
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         sameSite: 'None',
         secure: true,
+        maxAge: 15 * 24 * 60 * 60 * 1000,
       });
       res.status(200).json();
     } else {

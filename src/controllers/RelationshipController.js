@@ -2,12 +2,19 @@ const { AppDataSource } = require('../data-source');
 const { User } = require('../entity/User');
 const { Relationship } = require('../entity/Relationship');
 const { FriendRequest } = require('../entity/FriendRequest');
+const { Notifications } = require('../entity/Notifications');
+const { NotificationType } = require('../entity/NotificationType');
+const { RelationshipType } = require('../entity/RelationshipType');
 const ApiError = require('../utils/ApiError');
 
 const userRepository = AppDataSource.getRepository(User);
 const relationshipRepository = AppDataSource.getRepository(Relationship);
 const friendRequestRepository = AppDataSource.getRepository(FriendRequest);
-
+const relationshipTypeRepository = AppDataSource.getRepository(RelationshipType);
+const notificationsRepository = AppDataSource.getRepository(Notifications);
+const notificationTypeRepository =
+  AppDataSource.getRepository(NotificationType);
+  
 class RelationshipController {
   // get common friends
   async commonFriends(userId1, userId2) {
@@ -246,11 +253,21 @@ class RelationshipController {
     const { relationship, receiverId } = req.body;
     const { id } = req.userToken;
 
-    if (!relationship || relationship === 1) {
-      await friendRequestRepository.save({
+    const relationshipTypeFriend = await relationshipTypeRepository.findOne({where: {
+      name: "Bạn bè"
+    }})
+    
+    if (!relationship || relationship === relationshipTypeFriend?.id) {
+      const newFriendRequest = await friendRequestRepository.save({
         senderId: id,
         receiverId: receiverId,
       });
+
+      const notificationTypeFriendRequest = await notificationTypeRepository.findOne({
+        where: {
+          name: 'friend request'
+        }
+      })
 
       const userInfo = await userRepository.findOne({
         where: { id: id },
@@ -265,6 +282,14 @@ class RelationshipController {
         },
       });
 
+      const notificationFriendRequest = await notificationsRepository.save({
+        userId: receiverId,
+        senderId: id,
+        type: notificationTypeFriendRequest?.id,
+        relatedId: newFriendRequest?.id,
+        content: `<b>${userInfo?.lastName} ${userInfo?.firstName}</b> vừa gửi lời mời kết bạn cho bạn`
+      }) 
+
       const commonFriends = this.commonFriends(id, receiverId);
 
       io.to(`user-${receiverId}`).emit('newFriendRequest', {
@@ -272,6 +297,8 @@ class RelationshipController {
         commonFriends,
         numberOfCommonFriends: commonFriends?.length,
       });
+
+      io.to(`user-${receiverId}`).emit('notificationNewFriendRequest', notificationFriendRequest)
     } else {
       await relationshipRepository.save({
         user1: id,
@@ -335,8 +362,23 @@ class RelationshipController {
       },
     });
 
-    if (friendRequest) {
+    const notificationTypeFriendRequest = notificationTypeRepository.findOne({
+      where: {
+        name: 'friend request'
+      }
+    })
+
+    const notificationFriendRequest = await notificationsRepository.findOne({
+      where: {
+        senderId,
+        userId: id,
+        type: notificationTypeFriendRequest.id
+      }
+    })
+
+    if (friendRequest && notificationFriendRequest) {
       await friendRequestRepository.remove(friendRequest);
+      await notificationsRepository.remove(notificationFriendRequest);
 
       io.to(`user-${senderId}`).emit('friendRequestDenied', id);
 
@@ -366,7 +408,21 @@ class RelationshipController {
       },
     });
 
-    if (!existedRelationship && existedFriendRequest) {
+    const notificationTypeFriendRequest = notificationTypeRepository.findOne({
+      where: {
+        name: 'friend request'
+      }
+    })
+
+    const notificationFriendRequest = await notificationsRepository.findOne({
+      where: {
+        senderId: friendId,
+        userId: id,
+        type: notificationTypeFriendRequest.id
+      }
+    })
+
+    if (!existedRelationship && existedFriendRequest && notificationFriendRequest) {
       await relationshipRepository.save({
         user1: id,
         user2: friendId,
@@ -374,6 +430,7 @@ class RelationshipController {
       });
 
       await friendRequestRepository.remove(existedFriendRequest);
+      await notificationsRepository.remove(notificationFriendRequest);
 
       const currentUserInfo = await userRepository.findOne({
         where: { id: id },

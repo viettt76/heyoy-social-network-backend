@@ -29,8 +29,17 @@ const getPictures = (req, res, next) => {
   validationHandler(correctValidation, req.params, res, next);
 };
 
+const readNotification = (req, res, next) => {
+  const correctValidation = Joi.object({
+    notificationId: Joi.string().uuid().required(),
+  });
+
+  validationHandler(correctValidation, req.params, res, next);
+};
+
 module.exports = {
   updateMyInfo,
   getUserInfo,
   getPictures,
+  readNotification
 };

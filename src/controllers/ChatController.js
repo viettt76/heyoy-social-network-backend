@@ -51,17 +51,17 @@ class ChatController {
       message: message,
     });
 
-    // const notificationTypes = await notificationTypeRepository.find();
+    const notificationTypes = await notificationTypeRepository.find();
 
-    // const notification = await notificationsRepository.save({
-    //   userId: friendId,
-    //   senderId: id,
-    //   type: notificationTypes.find((type) => type.name === 'message')?.id,
-    //   relatedId: newMessage.id,
-    //   content: `${lastName} ${firstName} đã gửi cho bạn 1 tin nhắn`,
-    // });
+    const notification = await notificationsRepository.save({
+      userId: friendId,
+      senderId: id,
+      type: notificationTypes.find((type) => type.name === 'message')?.id,
+      relatedId: newMessage.id,
+      content: `<b>${lastName} ${firstName}</b> đã gửi cho bạn 1 tin nhắn`,
+    });
 
-    io.to(`user-${friendId}`).emit('newMessage', { newMessage });
+    io.to(`user-${friendId}`).emit('newMessage', { newMessage, notification });
 
     res.status(201).json({
       id: newMessage.id,
