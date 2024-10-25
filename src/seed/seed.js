@@ -3,11 +3,15 @@ const { RelationshipType } = require('../entity/RelationshipType');
 const { EmotionType } = require('../entity/EmotionType');
 const { PostVisibility } = require('../entity/PostVisibility');
 const { NotificationType } = require('../entity/NotificationType');
+const { User } = require('../entity/User');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 async function seed() {
   await AppDataSource.initialize();
 
   const relationshipTypes = ['Bạn bè', 'Người yêu', 'Chị em', 'Bạn thân'];
+
   const emotionTypes = [
     'Thích',
     'Yêu thích',
@@ -19,6 +23,22 @@ async function seed() {
   ];
   const postVisibilities = ['Bạn bè', 'Công khai', 'Riêng tư'];
   const notificationTypes = ['message', 'comment', 'like', 'friend request'];
+
+  const hashPassword = await bcrypt.hashSync('123456', saltRounds);
+  const users = [
+    {
+      firstName: 'Việt',
+      lastName: 'Hoàng',
+      username: '1',
+      password: hashPassword,
+    },
+    {
+      firstName: 'Vân',
+      lastName: 'Nguyễn',
+      username: '2',
+      password: hashPassword,
+    },
+  ];
 
   const relationshipTypeRepository =
     AppDataSource.getRepository(RelationshipType);
@@ -59,6 +79,16 @@ async function seed() {
     });
     if (!existingType) {
       await notificationTypeRepository.save({ name });
+    }
+  }
+
+  const userRepository = AppDataSource.getRepository(User);
+  for (const user of users) {
+    const existingType = await userRepository.findOne({
+      where: { username: user.username },
+    });
+    if (!existingType) {
+      await userRepository.save(user);
     }
   }
 

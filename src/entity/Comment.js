@@ -44,7 +44,11 @@ __decorate([
     __metadata("design:type", Date)
 ], Comment.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.comments, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.DeleteDateColumn)(),
+    __metadata("design:type", Date)
+], Comment.prototype, "deletedAt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.comments),
     (0, typeorm_1.JoinColumn)({ name: 'commentator', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
 ], Comment.prototype, "commentatorInfo", void 0);

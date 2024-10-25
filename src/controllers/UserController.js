@@ -1,11 +1,11 @@
-const { AppDataSource } = require("../data-source");
-const { User } = require("../entity/User");
-const { PictureOfPost } = require("../entity/PictureOfPost");
-const ApiError = require("../utils/ApiError");
-const { Post } = require("../entity/Post");
-const { Notifications } = require("../entity/Notifications");
-const { NotificationType } = require("../entity/NotificationType");
-const { Not } = require("typeorm");
+const { AppDataSource } = require('../data-source');
+const { User } = require('../entity/User');
+const { PictureOfPost } = require('../entity/PictureOfPost');
+const ApiError = require('../utils/ApiError');
+const { Post } = require('../entity/Post');
+const { Notifications } = require('../entity/Notifications');
+const { NotificationType } = require('../entity/NotificationType');
+const { Not } = require('typeorm');
 
 const userRepository = AppDataSource.getRepository(User);
 const pictureOfPostRepository = AppDataSource.getRepository(PictureOfPost);
@@ -32,12 +32,13 @@ class UserController {
         school: user.school,
         workplace: user.workplace,
         avatar: user.avatar,
+        isPrivate: user.isPrivate,
       });
     } else {
-      res.clearCookie("token");
-      res.clearCookie("refreshToken");
+      res.clearCookie('token');
+      res.clearCookie('refreshToken');
       res.status(404).json({
-        message: "The user does not exist",
+        message: 'The user does not exist',
       });
     }
   }
@@ -51,10 +52,10 @@ class UserController {
     });
 
     if (user) {
-      if (homeTown !== null) user.homeTown = homeTown !== "" ? homeTown : null;
-      if (school !== null) user.school = school !== "" ? school : null;
+      if (homeTown !== null) user.homeTown = homeTown !== '' ? homeTown : null;
+      if (school !== null) user.school = school !== '' ? school : null;
       if (workplace !== null)
-        user.workplace = workplace !== "" ? workplace : null;
+        user.workplace = workplace !== '' ? workplace : null;
       if (avatar !== null) user.avatar = avatar;
       if (birthday !== null) user.birthday = birthday;
 
@@ -84,6 +85,7 @@ class UserController {
         school: user.school,
         workplace: user.workplace,
         avatar: user.avatar,
+        isPrivate: user.isPrivate,
       });
     }
     throw new ApiError(404, "Couldn't find user");
@@ -94,11 +96,11 @@ class UserController {
     const { userId } = req.params;
 
     const pictures = await pictureOfPostRepository
-      .createQueryBuilder("pictures")
-      .innerJoin(Post, "post", "pictures.postId = post.id")
-      .innerJoin(User, "user", "post.poster = user.id")
-      .where("user.id = :userId", { userId })
-      .select(["pictures.id as pictureId", "pictures.picture as pictureUrl"])
+      .createQueryBuilder('pictures')
+      .innerJoin(Post, 'post', 'pictures.postId = post.id')
+      .innerJoin(User, 'user', 'post.poster = user.id')
+      .where('user.id = :userId', { userId })
+      .select(['pictures.id as pictureId', 'pictures.picture as pictureUrl'])
       .getRawMany();
 
     res.status(200).json(pictures);
@@ -111,54 +113,54 @@ class UserController {
     const notificationType = await notificationTypeRepository.find();
 
     const notificationsMessenger = await notificationsRepository
-      .createQueryBuilder("notification")
+      .createQueryBuilder('notification')
       .select([
-        "notification.id as id",
-        "notification.userId as userId",
-        "notification.senderId as senderId",
-        "notification.type as type",
-        "notification.relatedId as relatedId",
-        "notification.content as content",
-        "notification.isRead as isRead",
-        "notification.isOpenMenu as isOpenMenu",
-        "notification.createdAt as createdAt",
-        "notification.updatedAt as updatedAt",
+        'notification.id as id',
+        'notification.userId as userId',
+        'notification.senderId as senderId',
+        'notification.type as type',
+        'notification.relatedId as relatedId',
+        'notification.content as content',
+        'notification.isRead as isRead',
+        'notification.isOpenMenu as isOpenMenu',
+        'notification.createdAt as createdAt',
+        'notification.updatedAt as updatedAt',
       ])
       .where(
-        "notification.userId = :userId AND notification.type = :type AND notification.isRead = false",
+        'notification.userId = :userId AND notification.type = :type AND notification.isRead = false',
         {
           userId: id,
-          type: notificationType?.find((type) => type?.name === "message")?.id,
+          type: notificationType?.find((type) => type?.name === 'message')?.id,
         }
       )
-      .groupBy("notification.userId, notification.senderId, notification.type")
-      .orderBy("notification.createdAt", "DESC")
+      .groupBy('notification.userId, notification.senderId, notification.type')
+      .orderBy('notification.createdAt', 'DESC')
       .getRawMany();
 
     const notificationsOther = await notificationsRepository
-      .createQueryBuilder("notification")
-      .leftJoin(User, "sender", "notification.senderId = sender.id")
+      .createQueryBuilder('notification')
+      .leftJoin(User, 'sender', 'notification.senderId = sender.id')
       .select([
-        "notification.id as id",
-        "notification.userId as userId",
-        "notification.senderId as senderId",
-        "notification.type as type",
-        "notification.relatedId as relatedId",
-        "notification.content as content",
-        "notification.isRead as isRead",
-        "notification.isOpenMenu as isOpenMenu",
-        "notification.createdAt as createdAt",
-        "notification.updatedAt as updatedAt",
-        "sender.firstName as senderFirstName",
-        "sender.lastName as senderLastName",
-        "sender.avatar as senderAvatar",
+        'notification.id as id',
+        'notification.userId as userId',
+        'notification.senderId as senderId',
+        'notification.type as type',
+        'notification.relatedId as relatedId',
+        'notification.content as content',
+        'notification.isRead as isRead',
+        'notification.isOpenMenu as isOpenMenu',
+        'notification.createdAt as createdAt',
+        'notification.updatedAt as updatedAt',
+        'sender.firstName as senderFirstName',
+        'sender.lastName as senderLastName',
+        'sender.avatar as senderAvatar',
       ])
-      .where("notification.userId = :userId AND notification.type != :type", {
+      .where('notification.userId = :userId AND notification.type != :type', {
         userId: id,
-        type: notificationType?.find((type) => type?.name === "message")?.id,
+        type: notificationType?.find((type) => type?.name === 'message')?.id,
       })
-      .groupBy("notification.userId, notification.senderId, notification.type")
-      .orderBy("notification.createdAt", "DESC")
+      .groupBy('notification.userId, notification.senderId, notification.type')
+      .orderBy('notification.createdAt', 'DESC')
       .getRawMany();
 
     res.status(200).json({
@@ -178,7 +180,7 @@ class UserController {
     });
 
     if (!notificationMessenger) {
-      throw new ApiError(400, "Not found notification messenger");
+      throw new ApiError(400, 'Not found notification messenger');
     }
 
     notificationMessenger.isRead = true;
@@ -201,7 +203,7 @@ class UserController {
 
     const notificationTypeMessage = await notificationTypeRepository.findOne({
       where: {
-        name: "message",
+        name: 'message',
       },
     });
 
@@ -227,7 +229,7 @@ class UserController {
 
     const notificationTypeMessage = await notificationTypeRepository.findOne({
       where: {
-        name: "message",
+        name: 'message',
       },
     });
 
@@ -245,6 +247,48 @@ class UserController {
     await notificationsRepository.save(notificationOther);
 
     res.status(200).json();
+  }
+
+  // [PATCH] /user/profile/private
+  async setPrivateProfile(req, res, next) {
+    const { id } = req.userToken;
+
+    const user = await userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (user) {
+      user.isPrivate = true;
+
+      await userRepository.save(user);
+
+      return res.status(200).json();
+    }
+
+    throw new ApiError(404, 'Not found user');
+  }
+
+  // [PATCH] /user/profile/public
+  async setPublicProfile(req, res, next) {
+    const { id } = req.userToken;
+
+    const user = await userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (user) {
+      user.isPrivate = false;
+
+      await userRepository.save(user);
+
+      return res.status(200).json();
+    }
+
+    throw new ApiError(404, 'Not found user');
   }
 }
 

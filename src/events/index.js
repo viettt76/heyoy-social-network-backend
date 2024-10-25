@@ -6,8 +6,8 @@ const postEvents = require('./postEvents');
 const friendEvents = require('./friendEvents');
 const chatEvents = require('./chatEvents');
 
-const events = async (io, client) => {
-  io.on('connection', async (socket) => {
+const events = (io, client) => {
+  io.on('connection', (socket) => {
     const cookies = socket.handshake.headers.cookie;
 
     if (cookies) {
@@ -19,7 +19,7 @@ const events = async (io, client) => {
 
           socket.join(`user-${userToken.id}`);
 
-          socket.on('disconnect', async () => {
+          socket.on('disconnect', () => {
             socket.leave(`user-${userToken.id}`);
           });
 

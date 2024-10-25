@@ -68,6 +68,10 @@ __decorate([
     __metadata("design:type", Object)
 ], User.prototype, "avatar", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isPrivate", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], User.prototype, "createdAt", void 0);
@@ -80,35 +84,38 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "deletedAt", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Relationship_1.Relationship, relationship => relationship.user1Info),
+    (0, typeorm_1.OneToMany)(() => Relationship_1.Relationship, (relationship) => relationship.user1Info),
     __metadata("design:type", Array)
 ], User.prototype, "relationshipAsUser1", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Relationship_1.Relationship, relationship => relationship.user2Info),
+    (0, typeorm_1.OneToMany)(() => Relationship_1.Relationship, (relationship) => relationship.user2Info),
     __metadata("design:type", Array)
 ], User.prototype, "relationshipAsUser2", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => FriendRequest_1.FriendRequest, friendRequest => friendRequest.sender),
+    (0, typeorm_1.OneToMany)(() => FriendRequest_1.FriendRequest, (friendRequest) => friendRequest.sender),
     __metadata("design:type", Array)
 ], User.prototype, "friendRequestAsSender", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => FriendRequest_1.FriendRequest, friendRequest => friendRequest.receiver),
+    (0, typeorm_1.OneToMany)(() => FriendRequest_1.FriendRequest, (friendRequest) => friendRequest.receiver),
     __metadata("design:type", Array)
 ], User.prototype, "friendRequestAsReceiver", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Comment_1.Comment, comment => comment.commentatorInfo),
+    (0, typeorm_1.OneToMany)(() => Comment_1.Comment, (comment) => comment.commentatorInfo, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    }),
     __metadata("design:type", Array)
 ], User.prototype, "comments", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => GroupMember_1.GroupMember, groupMember => groupMember.user),
+    (0, typeorm_1.OneToMany)(() => GroupMember_1.GroupMember, (groupMember) => groupMember.user),
     __metadata("design:type", Array)
 ], User.prototype, "groupMembers", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Message_1.Message, message => message.senderInfo),
+    (0, typeorm_1.OneToMany)(() => Message_1.Message, (message) => message.senderInfo),
     __metadata("design:type", Array)
 ], User.prototype, "messages", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Notifications_1.Notifications, notification => notification.receiver),
+    (0, typeorm_1.OneToMany)(() => Notifications_1.Notifications, (notification) => notification.receiver),
     __metadata("design:type", Array)
 ], User.prototype, "receiverInfo", void 0);
 exports.User = User = __decorate([

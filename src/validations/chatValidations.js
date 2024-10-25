@@ -13,6 +13,7 @@ const sendMessage = (req, res, next) => {
   const correctValidation = Joi.object({
     friendId: Joi.string().uuid().required(),
     message: Joi.string().allow('', null),
+    file: Joi.string().allow('', null),
   });
 
   validationHandler(correctValidation, req.body, res, next);

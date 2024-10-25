@@ -6,21 +6,25 @@ const userRepository = AppDataSource.getRepository(User);
 
 // const { AccessToken } = require('livekit-server-sdk');
 const createToken = async ({ roomId, username }) => {
-  const LivekitServerSDK = await import('livekit-server-sdk');
+  try {
+    const LivekitServerSDK = await import('livekit-server-sdk');
 
-  const { AccessToken } = LivekitServerSDK;
+    const { AccessToken } = LivekitServerSDK;
 
-  const at = new AccessToken(
-    process.env.LIVEKIT_API_KEY,
-    process.env.LIVEKIT_API_SECRET,
-    {
-      identity: username,
-      ttl: '10m',
-    }
-  );
-  at.addGrant({ roomJoin: true, room: roomId });
+    const at = new AccessToken(
+      process.env.LIVEKIT_API_KEY,
+      process.env.LIVEKIT_API_SECRET,
+      {
+        identity: username,
+        ttl: '10m',
+      }
+    );
+    at.addGrant({ roomJoin: true, room: roomId });
 
-  return await at.toJwt();
+    return await at.toJwt();
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const chatEvents = (socket, io) => {

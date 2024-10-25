@@ -28,6 +28,7 @@ class ChatController {
         'message.sender as sender',
         'message.receiver as receiver',
         'message.message as message',
+        'message.picture as picture',
         'message.createdAt as createdAt',
       ])
       .where(
@@ -44,12 +45,27 @@ class ChatController {
   async sendMessage(req, res, next) {
     const { io } = req;
     const { id, firstName, lastName } = req.userToken;
-    const { friendId, message } = req.body;
-    const newMessage = await messageRepository.save({
-      sender: id,
-      receiver: friendId,
-      message: message,
-    });
+    const { friendId, message, file } = req.body;
+
+    let newMessage;
+
+    if (message) {
+      newMessage = await messageRepository.save({
+        sender: id,
+        receiver: friendId,
+        message: message,
+      });
+    }
+
+    if (file) {
+      newMessage = await messageRepository.save({
+        sender: id,
+        receiver: friendId,
+        picture: file,
+      });
+
+      io.to(`user-${id}`).emit('sendMessageFile', { messageFile: newMessage });
+    }
 
     const notificationTypes = await notificationTypeRepository.find();
 
@@ -117,7 +133,7 @@ class ChatController {
   // [GET] /chat/group-chat/messages/:groupChatId
   async getMessagesOfGroupChat(req, res, next) {
     const { groupChatId } = req.params;
-
+    n;
     const messages = await messageRepository
       .createQueryBuilder('message')
       .leftJoin(User, 'sender', 'sender.id = message.sender')

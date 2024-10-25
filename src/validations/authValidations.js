@@ -21,7 +21,16 @@ const login = (req, res, next) => {
   validationHandler(correctValidation, req.body, res, next);
 };
 
+const deleteAccount = (req, res, next) => {
+  const correctValidation = Joi.object({
+    password: Joi.string().min(6).max(20).required().trim().strict(),
+  });
+
+  validationHandler(correctValidation, req.body, res, next);
+};
+
 module.exports = {
   signup,
   login,
+  deleteAccount,
 };
