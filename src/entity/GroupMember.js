@@ -13,13 +13,10 @@ exports.GroupMember = void 0;
 const typeorm_1 = require("typeorm");
 const GroupChat_1 = require("./GroupChat");
 const User_1 = require("./User");
-let GroupMember = class GroupMember {
+const Base_1 = require("./Base");
+let GroupMember = class GroupMember extends Base_1.Base {
 };
 exports.GroupMember = GroupMember;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], GroupMember.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
@@ -32,14 +29,6 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
 ], GroupMember.prototype, "nickname", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], GroupMember.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], GroupMember.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => GroupChat_1.GroupChat),
     (0, typeorm_1.JoinColumn)({ name: 'groupChatId', referencedColumnName: 'id' }),

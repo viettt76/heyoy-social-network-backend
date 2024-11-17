@@ -66,6 +66,20 @@ const comment = (req, res, next) => {
   validationHandler(correctValidation, req.body, res, next);
 };
 
+const releaseEmotionOfComment = (req, res, next) => {
+  const correctValidation = Joi.object({
+    emotionId: Joi.number().integer().required(),
+    commentId: Joi.string().uuid().required(),
+  });
+
+  validationHandler(
+    correctValidation,
+    { ...req.params, ...req.body },
+    res,
+    next
+  );
+};
+
 module.exports = {
   post,
   releaseEmotion,
@@ -73,4 +87,5 @@ module.exports = {
   getUserPosts,
   getComments,
   comment,
+  releaseEmotionOfComment,
 };

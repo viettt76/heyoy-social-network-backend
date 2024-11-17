@@ -133,7 +133,7 @@ class ChatController {
   // [GET] /chat/group-chat/messages/:groupChatId
   async getMessagesOfGroupChat(req, res, next) {
     const { groupChatId } = req.params;
-    n;
+
     const messages = await messageRepository
       .createQueryBuilder('message')
       .leftJoin(User, 'sender', 'sender.id = message.sender')

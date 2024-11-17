@@ -13,13 +13,10 @@ exports.Notifications = void 0;
 const typeorm_1 = require("typeorm");
 const User_1 = require("./User");
 const NotificationType_1 = require("./NotificationType");
-let Notifications = class Notifications {
+const Base_1 = require("./Base");
+let Notifications = class Notifications extends Base_1.Base {
 };
 exports.Notifications = Notifications;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Notifications.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
@@ -48,14 +45,6 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], Notifications.prototype, "isOpenMenu", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], Notifications.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], Notifications.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => User_1.User),
     (0, typeorm_1.JoinColumn)({ name: 'userId', referencedColumnName: 'id' }),

@@ -13,7 +13,8 @@ exports.Relationship = void 0;
 const typeorm_1 = require("typeorm");
 const User_1 = require("./User");
 const RelationshipType_1 = require("./RelationshipType");
-let Relationship = class Relationship {
+const Base_1 = require("./Base");
+let Relationship = class Relationship extends Base_1.Base {
     normalizeUserOrder() {
         if (this.user1 > this.user2) {
             [this.user1, this.user2] = [this.user2, this.user1];
@@ -21,10 +22,6 @@ let Relationship = class Relationship {
     }
 };
 exports.Relationship = Relationship;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Relationship.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
@@ -38,26 +35,18 @@ __decorate([
     __metadata("design:type", Number)
 ], Relationship.prototype, "relationshipTypeId", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], Relationship.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], Relationship.prototype, "updatedAt", void 0);
-__decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Relationship.prototype, "normalizeUserOrder", null);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1.User, user => user.relationshipAsUser1),
+    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.relationshipAsUser1),
     (0, typeorm_1.JoinColumn)({ name: 'user1', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
 ], Relationship.prototype, "user1Info", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1.User, user => user.relationshipAsUser2),
+    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.relationshipAsUser2),
     (0, typeorm_1.JoinColumn)({ name: 'user2', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
 ], Relationship.prototype, "user2Info", void 0);

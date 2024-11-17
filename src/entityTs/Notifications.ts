@@ -1,38 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { NotificationType } from './NotificationType';
+import { Base } from './Base';
 
 @Entity({ name: 'notifications' })
-export class Notifications {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Notifications extends Base {
   @Column({ type: 'uuid' })
   userId: string;
 
   @Column({ type: 'uuid' })
   senderId: string;
 
-  @Column({ type: 'int'})
-  type: number
+  @Column({ type: 'int' })
+  type: number;
 
-  @Column({ type: 'uuid'})
-  relatedId: string
+  @Column({ type: 'uuid' })
+  relatedId: string;
 
-  @Column({ type: 'text'})
-  content: string
-
-  @Column({ default: false })
-  isRead: boolean
+  @Column({ type: 'text' })
+  content: string;
 
   @Column({ default: false })
-  isOpenMenu: boolean
+  isRead: boolean;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({ default: false })
+  isOpenMenu: boolean;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
@@ -43,6 +35,6 @@ export class Notifications {
   sender: User;
 
   @ManyToOne(() => NotificationType)
-  @JoinColumn({name: 'type', referencedColumnName: 'id' })
-  notificationType: NotificationType
+  @JoinColumn({ name: 'type', referencedColumnName: 'id' })
+  notificationType: NotificationType;
 }

@@ -37,9 +37,18 @@ const readNotification = (req, res, next) => {
   validationHandler(correctValidation, req.params, res, next);
 };
 
+const search = (req, res, next) => {
+  const correctValidation = Joi.object({
+    keyword: Joi.string().required(),
+  });
+
+  validationHandler(correctValidation, req.query, res, next);
+};
+
 module.exports = {
   updateMyInfo,
   getUserInfo,
   getPictures,
-  readNotification
+  readNotification,
+  search,
 };

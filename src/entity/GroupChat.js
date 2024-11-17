@@ -12,13 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroupChat = void 0;
 const typeorm_1 = require("typeorm");
 const GroupMember_1 = require("./GroupMember");
-let GroupChat = class GroupChat {
+const Base_1 = require("./Base");
+let GroupChat = class GroupChat extends Base_1.Base {
 };
 exports.GroupChat = GroupChat;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], GroupChat.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar' }),
     __metadata("design:type", String)
@@ -32,15 +29,7 @@ __decorate([
     __metadata("design:type", String)
 ], GroupChat.prototype, "administratorId", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], GroupChat.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], GroupChat.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => GroupMember_1.GroupMember, groupMember => groupMember.groupChat),
+    (0, typeorm_1.OneToMany)(() => GroupMember_1.GroupMember, (groupMember) => groupMember.groupChat),
     __metadata("design:type", Array)
 ], GroupChat.prototype, "members", void 0);
 exports.GroupChat = GroupChat = __decorate([

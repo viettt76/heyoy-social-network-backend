@@ -14,13 +14,10 @@ const typeorm_1 = require("typeorm");
 const PostVisibility_1 = require("./PostVisibility");
 const PictureOfPost_1 = require("./PictureOfPost");
 const EmotionPost_1 = require("./EmotionPost");
-let Post = class Post {
+const Base_1 = require("./Base");
+let Post = class Post extends Base_1.Base {
 };
 exports.Post = Post;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Post.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
@@ -34,24 +31,18 @@ __decorate([
     __metadata("design:type", String)
 ], Post.prototype, "content", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], Post.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], Post.prototype, "updatedAt", void 0);
-__decorate([
     (0, typeorm_1.ManyToOne)(() => PostVisibility_1.PostVisibility),
     (0, typeorm_1.JoinColumn)({ name: 'visibilityTypeId', referencedColumnName: 'id' }),
     __metadata("design:type", PostVisibility_1.PostVisibility)
 ], Post.prototype, "visibility", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => PictureOfPost_1.PictureOfPost, picture => picture.postId, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => PictureOfPost_1.PictureOfPost, (picture) => picture.postId, {
+        cascade: true,
+    }),
     __metadata("design:type", Array)
 ], Post.prototype, "pictures", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => EmotionPost_1.EmotionPost, emotion => emotion.postId, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => EmotionPost_1.EmotionPost, (emotion) => emotion.postId, { cascade: true }),
     __metadata("design:type", Array)
 ], Post.prototype, "emotions", void 0);
 exports.Post = Post = __decorate([

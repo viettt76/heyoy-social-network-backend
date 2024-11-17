@@ -7,17 +7,14 @@ import {
   UpdateDateColumn,
   JoinColumn,
   DeleteDateColumn,
-  EventSubscriber,
-  EntitySubscriberInterface,
-  SelectQueryBuilder,
+  OneToMany,
 } from 'typeorm';
 import { User } from './User';
+import { Base } from './Base';
+import { EmotionComment } from './EmotionComment';
 
 @Entity({ name: 'comment' })
-export class Comment {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
+export class Comment extends Base {
   @Column({ type: 'uuid' })
   postId!: string;
 
@@ -30,18 +27,14 @@ export class Comment {
   @Column({ type: 'text', nullable: true })
   content?: string;
 
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
-
   @ManyToOne(() => User, (user) => user.comments)
   @JoinColumn({ name: 'commentator', referencedColumnName: 'id' })
   commentatorInfo!: User;
 
-  entities: [];
+  @OneToMany(
+    () => EmotionComment,
+    (emotionComment) => emotionComment.commentId,
+    { cascade: true }
+  )
+  emotions: EmotionComment[];
 }

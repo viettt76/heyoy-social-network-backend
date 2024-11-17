@@ -1,12 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { User } from './User';
+import { Base } from './Base';
 
 @Entity({ name: 'message' })
-@Index('IDX_MESSAGE_SENDER_RECEIVER', ['sender', 'receiver']  )
-export class Message {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
+@Index('IDX_MESSAGE_SENDER_RECEIVER', ['sender', 'receiver'])
+export class Message extends Base {
   @Column({ type: 'uuid' })
   sender!: string;
 
@@ -22,13 +20,7 @@ export class Message {
   @Column({ type: 'varchar', nullable: true })
   picture?: string;
 
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'sender', referencedColumnName: 'id'})
-  senderInfo: User
+  @JoinColumn({ name: 'sender', referencedColumnName: 'id' })
+  senderInfo: User;
 }

@@ -37,6 +37,12 @@ const postRouter = (io) => {
     ioMiddleware(io),
     postController.comment
   );
+  router.put(
+    '/comment/emotion/:commentId',
+    postValidations.releaseEmotionOfComment,
+    ioMiddleware(io),
+    postController.releaseEmotionOfComment
+  );
 
   return router;
 };

@@ -1,11 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Unique } from 'typeorm';
+import { Entity, Column, Unique } from 'typeorm';
+import { Base } from './Base';
 
 @Entity({ name: 'emotion_message' })
 @Unique(['messageId', 'userId'])
-export class EmotionMessage {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
+export class EmotionMessage extends Base {
   @Column({ type: 'uuid' })
   messageId!: string;
 
@@ -14,10 +12,4 @@ export class EmotionMessage {
 
   @Column({ type: 'varchar' })
   emo!: string;
-
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
 }

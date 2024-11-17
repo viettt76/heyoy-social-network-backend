@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError');
 const { Post } = require('../entity/Post');
 const { Notifications } = require('../entity/Notifications');
 const { NotificationType } = require('../entity/NotificationType');
-const { Not } = require('typeorm');
+const { Not, Like } = require('typeorm');
 
 const userRepository = AppDataSource.getRepository(User);
 const pictureOfPostRepository = AppDataSource.getRepository(PictureOfPost);
@@ -289,6 +289,38 @@ class UserController {
     }
 
     throw new ApiError(404, 'Not found user');
+  }
+
+  // [GET] /user/search?keyword=keyword
+  async search(req, res, next) {
+    const { id } = req.userToken;
+    const { keyword } = req.query;
+
+    const queryBuilder = userRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id as id',
+        'user.firstName as firstName',
+        'user.lastName as lastName',
+        'user.avatar as avatar',
+      ]);
+
+    const keywords = keyword.split(' ');
+
+    keywords.forEach((word, index) => {
+      const condition = `(user.firstName like :keyword${index} OR user.lastName like :keyword${index})`;
+
+      if (index === 0) {
+        queryBuilder.where(condition, { keyword0: `%${word}%` });
+      } else {
+        queryBuilder.orWhere(condition, { [`keyword${index}`]: `%${word}%` });
+      }
+    });
+    queryBuilder.andWhere('user.id != :id', { id });
+
+    const users = await queryBuilder.getRawMany();
+
+    return res.status(200).json(users);
   }
 }
 

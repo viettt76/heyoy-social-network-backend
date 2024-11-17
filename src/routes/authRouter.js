@@ -12,5 +12,16 @@ router.delete(
   authValidations.deleteAccount,
   authController.deleteAccount
 );
+router.post(
+  '/recover-account',
+  authValidations.recoverAccount,
+  authController.recoverAccount
+);
+
+router.patch(
+  '/change-password',
+  authValidations.changePassword,
+  authController.changePassword
+);
 
 module.exports = router;

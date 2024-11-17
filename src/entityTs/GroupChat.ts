@@ -1,11 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { GroupMember } from './GroupMember';
+import { Base } from './Base';
 
 @Entity({ name: 'group_chat' })
-export class GroupChat {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
+export class GroupChat extends Base {
   @Column({ type: 'varchar' })
   name!: string;
 
@@ -15,13 +13,6 @@ export class GroupChat {
   @Column({ type: 'uuid' })
   administratorId!: string;
 
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
-  @OneToMany(() => GroupMember, groupMember => groupMember.groupChat)
+  @OneToMany(() => GroupMember, (groupMember) => groupMember.groupChat)
   members: GroupMember[];
-
 }

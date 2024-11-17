@@ -11,13 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmotionMessage = void 0;
 const typeorm_1 = require("typeorm");
-let EmotionMessage = class EmotionMessage {
+const Base_1 = require("./Base");
+let EmotionMessage = class EmotionMessage extends Base_1.Base {
 };
 exports.EmotionMessage = EmotionMessage;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], EmotionMessage.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
@@ -30,14 +27,6 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar' }),
     __metadata("design:type", String)
 ], EmotionMessage.prototype, "emo", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], EmotionMessage.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], EmotionMessage.prototype, "updatedAt", void 0);
 exports.EmotionMessage = EmotionMessage = __decorate([
     (0, typeorm_1.Entity)({ name: 'emotion_message' }),
     (0, typeorm_1.Unique)(['messageId', 'userId'])

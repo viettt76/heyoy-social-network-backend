@@ -1,13 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
-import { PostVisibility } from './PostVisibility'; 
+import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { PostVisibility } from './PostVisibility';
 import { PictureOfPost } from './PictureOfPost';
-import { EmotionPost } from './EmotionPost'; 
+import { EmotionPost } from './EmotionPost';
+import { Base } from './Base';
 
 @Entity({ name: 'post' })
-export class Post {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
+export class Post extends Base {
   @Column({ type: 'uuid' })
   poster!: string;
 
@@ -17,19 +15,15 @@ export class Post {
   @Column({ type: 'text', nullable: true })
   content?: string;
 
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
   @ManyToOne(() => PostVisibility)
   @JoinColumn({ name: 'visibilityTypeId', referencedColumnName: 'id' })
   visibility!: PostVisibility;
 
-  @OneToMany(() => PictureOfPost, picture => picture.postId, { cascade: true })
+  @OneToMany(() => PictureOfPost, (picture) => picture.postId, {
+    cascade: true,
+  })
   pictures!: PictureOfPost[];
 
-  @OneToMany(() => EmotionPost, emotion => emotion.postId, { cascade: true })
+  @OneToMany(() => EmotionPost, (emotion) => emotion.postId, { cascade: true })
   emotions!: EmotionPost[];
 }

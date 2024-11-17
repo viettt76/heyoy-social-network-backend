@@ -35,6 +35,7 @@ const userRouter = (io) => {
   router.patch('/notification/other/open', userController.openMenuOther);
   router.patch('/profile/private', userController.setPrivateProfile);
   router.patch('/profile/public', userController.setPublicProfile);
+  router.get('/search', userValidations.search, userController.search);
 
   return router;
 };

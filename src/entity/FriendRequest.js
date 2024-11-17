@@ -12,13 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FriendRequest = void 0;
 const typeorm_1 = require("typeorm");
 const User_1 = require("./User");
-let FriendRequest = class FriendRequest {
+const Base_1 = require("./Base");
+let FriendRequest = class FriendRequest extends Base_1.Base {
 };
 exports.FriendRequest = FriendRequest;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], FriendRequest.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
@@ -28,20 +25,16 @@ __decorate([
     __metadata("design:type", String)
 ], FriendRequest.prototype, "receiverId", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], FriendRequest.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], FriendRequest.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.friendRequestAsSender, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.friendRequestAsSender, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)({ name: 'senderId', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
 ], FriendRequest.prototype, "sender", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.friendRequestAsReceiver, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.friendRequestAsReceiver, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)({ name: 'receiverId', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
 ], FriendRequest.prototype, "receiver", void 0);

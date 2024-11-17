@@ -2,7 +2,11 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const authMiddleware = (req, res, next) => {
-  const nonSecurePaths = ['/auth/signup', '/auth/login'];
+  const nonSecurePaths = [
+    '/auth/signup',
+    '/auth/login',
+    '/auth/recover-account',
+  ];
 
   if (nonSecurePaths.includes(req.path)) return next();
 

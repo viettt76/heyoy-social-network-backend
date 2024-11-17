@@ -1,26 +1,14 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-  Index,
-  DeleteDateColumn,
-  OneToOne,
-} from 'typeorm';
+import { Entity, Column, OneToMany, Index } from 'typeorm';
 import { Relationship } from './Relationship';
 import { Comment } from './Comment';
 import { FriendRequest } from './FriendRequest';
 import { GroupMember } from './GroupMember';
 import { Message } from './Message';
 import { Notifications } from './Notifications';
+import { Base } from './Base';
 
 @Entity('user')
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends Base {
   @Column({ type: 'varchar' })
   firstName: string;
 
@@ -56,15 +44,6 @@ export class User {
 
   @Column({ default: false })
   isPrivate: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
 
   @OneToMany(() => Relationship, (relationship) => relationship.user1Info)
   relationshipAsUser1: Relationship[];

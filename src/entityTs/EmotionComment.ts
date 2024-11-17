@@ -3,11 +3,11 @@ import { EmotionType } from './EmotionType';
 import { User } from './User';
 import { Base } from './Base';
 
-@Entity('emotion_post')
-@Unique(['postId', 'userId'])
-export class EmotionPost extends Base {
+@Entity('emotion_comment')
+@Unique(['commentId', 'userId'])
+export class EmotionComment extends Base {
   @Column('uuid')
-  postId: string;
+  commentId: string;
 
   @Column('uuid')
   userId: string;

@@ -17,13 +17,10 @@ const FriendRequest_1 = require("./FriendRequest");
 const GroupMember_1 = require("./GroupMember");
 const Message_1 = require("./Message");
 const Notifications_1 = require("./Notifications");
-let User = class User {
+const Base_1 = require("./Base");
+let User = class User extends Base_1.Base {
 };
 exports.User = User;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], User.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar' }),
     __metadata("design:type", String)
@@ -72,18 +69,6 @@ __decorate([
     __metadata("design:type", Boolean)
 ], User.prototype, "isPrivate", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], User.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], User.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.DeleteDateColumn)(),
-    __metadata("design:type", Date)
-], User.prototype, "deletedAt", void 0);
-__decorate([
     (0, typeorm_1.OneToMany)(() => Relationship_1.Relationship, (relationship) => relationship.user1Info),
     __metadata("design:type", Array)
 ], User.prototype, "relationshipAsUser1", void 0);
@@ -101,7 +86,7 @@ __decorate([
 ], User.prototype, "friendRequestAsReceiver", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => Comment_1.Comment, (comment) => comment.commentatorInfo, {
-        cascade: true,
+        cascade: ['soft-remove'],
         onDelete: 'CASCADE',
     }),
     __metadata("design:type", Array)

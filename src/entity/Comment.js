@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Comment = void 0;
 const typeorm_1 = require("typeorm");
 const User_1 = require("./User");
-let Comment = class Comment {
+const Base_1 = require("./Base");
+const EmotionComment_1 = require("./EmotionComment");
+let Comment = class Comment extends Base_1.Base {
 };
 exports.Comment = Comment;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
-], Comment.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
@@ -36,22 +34,14 @@ __decorate([
     __metadata("design:type", String)
 ], Comment.prototype, "content", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], Comment.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], Comment.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.DeleteDateColumn)(),
-    __metadata("design:type", Date)
-], Comment.prototype, "deletedAt", void 0);
-__decorate([
     (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.comments),
     (0, typeorm_1.JoinColumn)({ name: 'commentator', referencedColumnName: 'id' }),
     __metadata("design:type", User_1.User)
 ], Comment.prototype, "commentatorInfo", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => EmotionComment_1.EmotionComment, (emotionComment) => emotionComment.commentId, { cascade: true }),
+    __metadata("design:type", Array)
+], Comment.prototype, "emotions", void 0);
 exports.Comment = Comment = __decorate([
     (0, typeorm_1.Entity)({ name: 'comment' })
 ], Comment);

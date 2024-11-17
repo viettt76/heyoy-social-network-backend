@@ -6,6 +6,7 @@ const { User } = require('../entity/User');
 const { EmotionType } = require('../entity/EmotionType');
 const { EmotionPost } = require('../entity/EmotionPost');
 const { Comment } = require('../entity/Comment');
+const { EmotionComment } = require('../entity/EmotionComment');
 const ApiError = require('../utils/ApiError');
 
 const postRepository = AppDataSource.getRepository(Post);
@@ -15,6 +16,7 @@ const emotionPostRepository = AppDataSource.getRepository(EmotionPost);
 const relationshipRepository = AppDataSource.getRepository(Relationship);
 const userRepository = AppDataSource.getRepository(User);
 const commentRepository = AppDataSource.getRepository(Comment);
+const emotionCommentRepository = AppDataSource.getRepository(EmotionComment);
 
 class PostController {
   constructor() {}
@@ -375,6 +377,7 @@ class PostController {
 
   // [GET] /posts/comments/:postId
   async getComments(req, res, next) {
+    const { id } = req.userToken;
     const { postId } = req.params;
     const { sortField, sortType } = req.query;
 
@@ -401,31 +404,113 @@ class PostController {
       return nestedComments;
     };
 
-    const comments = await commentRepository.find({
-      where: {
-        postId,
-      },
-      relations: ['commentatorInfo'],
-      select: {
-        id: true,
-        parentCommentId: true,
-        content: true,
-        createdAt: true,
+    // const comments = await commentRepository.find({
+    //   relations: ['commentatorInfo'],
+    //   where: {
+    //     postId,
+    //   },
+    //   select: {
+    //     id: true,
+    //     parentCommentId: true,
+    //     content: true,
+    //     createdAt: true,
+    //     commentatorInfo: {
+    //       id: true,
+    //       firstName: true,
+    //       lastName: true,
+    //       avatar: true,
+    //     },
+    //   },
+    //   order: {
+    //     [sortField || 'createdAt']: sortType || 'DESC',
+    //   },
+    // });
+
+    const rawComments = await commentRepository
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect(
+        User,
+        'commentatarInfo',
+        'commentatarInfo.id = comment.commentator'
+      )
+      .leftJoinAndSelect(
+        EmotionComment,
+        'emotionComment',
+        'emotionComment.commentId = comment.id'
+      )
+      .select([
+        'comment.id as id',
+        'comment.parentCommentId as parentCommentId',
+        'comment.content as content',
+        'comment.createdAt as createdAt',
+        'commentatarInfo.id as commentatorId',
+        'commentatarInfo.firstName as commentatorFirstName',
+        'commentatarInfo.lastName as commentatorLastName',
+        'commentatarInfo.avatar as commentatorAvatar',
+      ])
+      .addSelect((qb) => {
+        return qb
+          .subQuery()
+          .from(EmotionComment, 'ec')
+          .leftJoinAndSelect(EmotionType, 'et', 'ec.emotionTypeId = et.id')
+          .where('ec.commentId = comment.id AND ec.userId = :userId', {
+            userId: id,
+          })
+          .select('et.name');
+      }, 'currentEmotionName')
+      .where('comment.postId = :postId', { postId })
+      .orderBy(`comment.${sortField} || comment.createdAt`, sortType || 'DESC')
+      .getRawMany();
+
+    const comments = rawComments.map((comment) => {
+      return {
+        id: comment.id,
+        parentCommentId: comment.parentCommentId,
+        content: comment.content,
+        createdAt: comment.createdAt,
+        currentEmotionName: comment.currentEmotionName,
         commentatorInfo: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          avatar: true,
+          id: comment.commentatorId,
+          firstName: comment.commentatorFirstName,
+          lastName: comment.commentatorLastName,
+          avatar: comment.commentatorAvatar,
         },
-      },
-      order: {
-        [sortField || 'createdAt']: sortType || 'DESC',
-      },
+      };
     });
 
     const numberOfComments = comments.length;
 
     const result = nestComments(comments);
+
+    // const result = await Promise.all(
+    //   posts.map(async (post) => {
+    //     const emotions = await emotionPostRepository.find({
+    //       relations: ['emotion', 'userInfo'],
+    //       where: { postId: post.id },
+    //       select: {
+    //         id: true,
+    //         emotion: {
+    //           id: true,
+    //           name: true,
+    //         },
+    //         userInfo: {
+    //           id: true,
+    //           firstName: true,
+    //           lastName: true,
+    //           avatar: true,
+    //         },
+    //       },
+    //     });
+    //     return {
+    //       ...post,
+    //       emotions,
+    //       pictures:
+    //         JSON.parse(post.pictures)[0]?.id === null
+    //           ? []
+    //           : JSON.parse(post.pictures),
+    //     };
+    //   })
+    // );
 
     return res.status(200).json({ comments: result, numberOfComments });
   }
@@ -481,6 +566,37 @@ class PostController {
     }
 
     io.emit('newComment-numberOfComments', postId);
+
+    return res.status(201).json();
+  }
+
+  // [PUT] /posts/comment/emotion/:commentId
+  async releaseEmotionOfComment(req, res, next) {
+    const { io } = req;
+    const { id } = req.userToken;
+    const { commentId } = req.params;
+    const { emotionId } = req.body;
+
+    const emotionComment = await emotionCommentRepository.findOne({
+      where: {
+        commentId,
+        userId: id,
+      },
+    });
+
+    if (emotionComment) {
+      emotionComment.emotionTypeId = emotionId;
+
+      await emotionCommentRepository.save(emotionComment);
+
+      // io.emit('releaseEmotionOfComment', )
+    } else {
+      await emotionCommentRepository.save({
+        commentId,
+        userId: id,
+        emotionTypeId: emotionId,
+      });
+    }
 
     return res.status(201).json();
   }

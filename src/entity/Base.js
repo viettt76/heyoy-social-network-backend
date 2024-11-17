@@ -9,26 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PictureOfPost = void 0;
+exports.Base = void 0;
 const typeorm_1 = require("typeorm");
-const Post_1 = require("./Post");
-const Base_1 = require("./Base");
-let PictureOfPost = class PictureOfPost extends Base_1.Base {
-};
-exports.PictureOfPost = PictureOfPost;
+class Base {
+}
+exports.Base = Base;
 __decorate([
-    (0, typeorm_1.Column)({ type: 'uuid' }),
+    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
-], PictureOfPost.prototype, "postId", void 0);
+], Base.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar' }),
-    __metadata("design:type", String)
-], PictureOfPost.prototype, "picture", void 0);
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", Date)
+], Base.prototype, "createdAt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => Post_1.Post),
-    (0, typeorm_1.JoinColumn)({ name: 'postId', referencedColumnName: 'id' }),
-    __metadata("design:type", Post_1.Post)
-], PictureOfPost.prototype, "visibility", void 0);
-exports.PictureOfPost = PictureOfPost = __decorate([
-    (0, typeorm_1.Entity)({ name: 'picture_of_post' })
-], PictureOfPost);
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", Date)
+], Base.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.DeleteDateColumn)(),
+    __metadata("design:type", Date)
+], Base.prototype, "deletedAt", void 0);
